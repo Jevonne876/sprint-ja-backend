@@ -1,6 +1,7 @@
 package com.example.sprintjabackend.model;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
@@ -13,6 +14,7 @@ import static org.springframework.data.jpa.domain.AbstractPersistable_.id;
 
 @Getter
 @Setter
+@NoArgsConstructor
 @Entity(name = "users")
 public class Users implements Serializable {
     @Id
@@ -65,8 +67,6 @@ public class Users implements Serializable {
     @Column(name = "createdAt", nullable = false)
     Date createdAt = new Date();
 
-    public Users() {
-    }
 
     public Users(UUID userId, Long trn, String firstName, String lastName, Date dateOfBirth, String email,
                  String password, String phoneNumber, String address1, String address2, String pickUpBranch,
