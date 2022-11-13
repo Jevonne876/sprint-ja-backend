@@ -10,13 +10,12 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.UUID;
 
-import static org.springframework.data.jpa.domain.AbstractPersistable_.id;
-
 @Getter
 @Setter
 @NoArgsConstructor
-@Entity(name = "users")
-public class Users implements Serializable {
+@Entity
+@Table(name = "users")
+public class User implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false, updatable = false, unique = true, insertable = false)
@@ -68,7 +67,7 @@ public class Users implements Serializable {
     Date createdAt = new Date();
 
 
-    public Users(UUID userId, Long trn, String firstName, String lastName, Date dateOfBirth, String email,
+    public User(UUID userId, Long trn, String firstName, String lastName, Date dateOfBirth, String email,
                  String password, String phoneNumber, String address1, String address2, String pickUpBranch,
                  String role, String[] authorities) {
 
