@@ -1,5 +1,8 @@
 package com.example.sprintjabackend.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -9,6 +12,7 @@ import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 import static com.example.sprintjabackend.enums.Role.ROLE_USER;
@@ -61,9 +65,13 @@ public class User implements Serializable {
     @Column(name = "pickupBranch", updatable = true)
     String pickUpBranch;
 
+    @OneToMany(fetch = FetchType.LAZY,
+            cascade = CascadeType.ALL)
+    private List<Package> packages;
+
     private String role = ROLE_USER.name();
     private String[] authorities = ROLE_USER.getAuthorities();
-    ;
+
     private boolean isActive = true;
     private boolean isNotLocked = true;
 
