@@ -40,8 +40,18 @@ public class UserResource {
         User newUser = new User();
         newUser = userService.register(user.getTrn(), user.getFirstName(), user.getLastName(),
                 user.getDateOfBirth(), user.getEmail(), user.getPassword(),
-                user.getPhoneNumber(), user.getAddress1(), user.getAddress2(), user.getPickUpBranch());
+                user.getPhoneNumber(), user.getStreetAddress(), user.getParish(), user.getPickUpBranch());
         return new ResponseEntity<>(newUser, OK);
+    }
+
+    @PostMapping(value = "user-login")
+    public ResponseEntity<User> userLogin(@RequestBody User user) {
+        authenticate(user.getEmail(), user.getPassword());
+        User loggedInUser = new User();
+        loggedInUser = userService.findUserByUsername(user.getEmail());
+        UserPrincipal userPrincipal = new UserPrincipal(loggedInUser);
+        HttpHeaders httpHeaders = getJwtHeader(userPrincipal);
+        return new ResponseEntity<>(loggedInUser, httpHeaders, OK);
     }
 
     private void authenticate(String username, String password) {
