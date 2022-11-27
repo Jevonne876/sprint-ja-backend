@@ -1,8 +1,6 @@
 package com.example.sprintjabackend.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.*;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 
@@ -22,6 +20,7 @@ import static com.example.sprintjabackend.enums.Role.ROLE_USER;
 @Table(name = "users")
 @Entity
 @ToString
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class User implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -65,8 +64,9 @@ public class User implements Serializable {
     @Column(name = "pickupBranch", updatable = true)
     String pickUpBranch;
 
-    @OneToMany(fetch = FetchType.LAZY,
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY,
             cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<Package> packages;
 
     private String role = ROLE_USER.name();
@@ -129,6 +129,17 @@ public class User implements Serializable {
         this.isNotLocked = true;
         this.updatedAt = new Date();
         this.createdAt = new Date();
+    }
+
+    @JsonIgnore
+    @JsonProperty(value = "password")
+    public String getPassword() {
+        return password;
+    }
+
+    @JsonIgnore
+    public List<Package> getPackage() {
+        return packages;
     }
 
 

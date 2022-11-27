@@ -6,9 +6,10 @@ import com.example.sprintjabackend.repository.PackageRepository;
 import com.example.sprintjabackend.service.PackageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import java.util.UUID;
 
 @Service
 public class PackageServiceImpl implements PackageService {
@@ -34,5 +35,10 @@ public class PackageServiceImpl implements PackageService {
     @Override
     public Page<Package> findAll(Pageable pageable) {
         return packageRepository.findAll(pageable);
+    }
+
+    @Override
+    public Page<Package> findAllByUserId(Long id, Pageable pageable) {
+        return packageRepository.findAllByUserId(id, pageable);
     }
 }

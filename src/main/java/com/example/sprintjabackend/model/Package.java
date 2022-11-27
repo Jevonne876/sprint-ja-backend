@@ -1,12 +1,13 @@
 package com.example.sprintjabackend.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.Date;
 import java.util.UUID;
 
@@ -15,10 +16,11 @@ import java.util.UUID;
 @NoArgsConstructor
 @Getter
 @Setter
-public class Package {
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "p_id")
+public class Package implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long p_id;
     @GenericGenerator(name = "uuid2", strategy = "uuid2")
     @GeneratedValue(generator = "uuid2", strategy = GenerationType.IDENTITY)
     @Column(name = "package_id", nullable = false, updatable = false, unique = true)
@@ -35,8 +37,9 @@ public class Package {
     @Column(name = "cost", nullable = false)
     private double cost;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn( nullable = false)
+    @ManyToOne(fetch = FetchType.EAGER, optional = false, cascade = CascadeType.MERGE)
+    @JoinColumn(name = "id", nullable = false)
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private User user;
 
     @Column(name = "updatedAt", nullable = false)
@@ -62,29 +65,15 @@ public class Package {
         this.weight = weight;
         this.cost = cost;
         this.user = user;
+        this.updatedAt = new Date();
+        this.createdAt = new Date();
     }
 
-    //getter method to retrieve the AuthorId
-    public UUID getUserId(){
-        return user.getUserId();
-    }
-
-    @JsonIgnore
-    public User getUser() {
-        return user;
-    }
-
-    @Override
-    public String toString() {
-        return "Package{" +
-                "id=" + id +
-                ", packageId=" + packageId +
-                ", trackingNumber='" + trackingNumber + '\'' +
-                ", description='" + description + '\'' +
-                ", weight=" + weight +
-                ", cost=" + cost +
-                ", updatedAt=" + updatedAt +
-                ", createdAt=" + createdAt +
-                '}';
+    public Package( String description, double weight, double cost) {
+        this.trackingNumber = trackingNumber;
+        this.description = description;
+        this.weight = weight;
+        this.cost = cost;
+        this.updatedAt = new Date();
     }
 }

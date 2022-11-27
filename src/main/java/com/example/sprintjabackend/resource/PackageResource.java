@@ -8,10 +8,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.UUID;
 
 import static org.springframework.http.HttpStatus.OK;
 
@@ -29,9 +28,15 @@ public class PackageResource {
 
     @GetMapping(value = "get-all-packages")
     public ResponseEntity<Page<Package>> getAll() {
-        Pageable pageable = PageRequest.of(0, 1);
-        System.out.println(packageService.findAll(pageable));
+        Pageable pageable = PageRequest.of(0, 10);
         return new ResponseEntity<>(packageService.findAll(pageable), OK);
+    }
+
+    @GetMapping(value = "get-all-packages/{userId}")
+    public ResponseEntity<Page<Package>> getAllPackagesByUserId(@PathVariable("userId") Long id) {
+        Pageable pageable = PageRequest.of(0, 10);
+        return new ResponseEntity<>(packageService.findAllByUserId(id, pageable), OK);
+
     }
 
     @PostMapping(value = "add-new-package")
@@ -42,5 +47,11 @@ public class PackageResource {
 
         return new ResponseEntity<>(newPackage, OK);
     }
+
+//    @PutMapping(value = "update-package/{trackingNumber}")
+//    public ResponseEntity<Package> updatePackage(@RequestParam String trackingNumber, @RequestParam String description,
+//                                                 @RequestParam double weight, @RequestParam  double cost){
+//
+//    }
 
 }
