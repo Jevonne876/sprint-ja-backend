@@ -10,10 +10,13 @@ import java.util.UUID;
 public interface PackageService {
 
     Package addNewPackage(String trackingNumber, String description,
-                          double weight, double cost, User user);
+                          double weight, double cost, UUID userId);
 
     Page<Package> findAll(Pageable pageable);
 
-    Page<Package> findAllByUserId(Long id, Pageable pageable);
+    Page<Package> findAllPackageByUserId(UUID userId, Pageable pageable);
+
+    Package findByTrackingNumber(String trackingNumber);
+
 
 }

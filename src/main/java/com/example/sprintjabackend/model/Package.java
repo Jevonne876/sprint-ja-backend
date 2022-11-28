@@ -16,11 +16,10 @@ import java.util.UUID;
 @NoArgsConstructor
 @Getter
 @Setter
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "p_id")
 public class Package implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long p_id;
+    private Long id;
     @GenericGenerator(name = "uuid2", strategy = "uuid2")
     @GeneratedValue(generator = "uuid2", strategy = GenerationType.IDENTITY)
     @Column(name = "package_id", nullable = false, updatable = false, unique = true)
@@ -37,10 +36,8 @@ public class Package implements Serializable {
     @Column(name = "cost", nullable = false)
     private double cost;
 
-    @ManyToOne(fetch = FetchType.EAGER, optional = false, cascade = CascadeType.MERGE)
-    @JoinColumn(name = "id", nullable = false)
-    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-    private User user;
+    @Column(name = "userId", nullable = false,updatable = false)
+    private UUID userId;
 
     @Column(name = "updatedAt", nullable = false)
     Date updatedAt = new Date();
@@ -49,7 +46,8 @@ public class Package implements Serializable {
     Date createdAt = new Date();
 
 
-    public Package(UUID packageId, String trackingNumber, String description, double weight, double cost, Date updatedAt, Date createdAt) {
+    public Package(UUID packageId, String trackingNumber,
+                   String description, double weight, double cost, Date updatedAt, Date createdAt) {
         this.packageId = packageId;
         this.trackingNumber = trackingNumber;
         this.description = description;
@@ -59,21 +57,14 @@ public class Package implements Serializable {
         this.createdAt = createdAt;
     }
 
-    public Package(String trackingNumber, String description, double weight, double cost, User user) {
+    public Package(String trackingNumber, String description, double weight, double cost, UUID userId) {
         this.trackingNumber = trackingNumber;
         this.description = description;
         this.weight = weight;
         this.cost = cost;
-        this.user = user;
+        this.userId = userId;
         this.updatedAt = new Date();
         this.createdAt = new Date();
     }
 
-    public Package( String description, double weight, double cost) {
-        this.trackingNumber = trackingNumber;
-        this.description = description;
-        this.weight = weight;
-        this.cost = cost;
-        this.updatedAt = new Date();
-    }
 }

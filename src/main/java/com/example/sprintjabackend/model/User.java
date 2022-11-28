@@ -6,9 +6,7 @@ import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.Arrays;
 import java.util.Date;
-import java.util.List;
 import java.util.UUID;
 
 import static com.example.sprintjabackend.enums.Role.ROLE_USER;
@@ -20,7 +18,6 @@ import static com.example.sprintjabackend.enums.Role.ROLE_USER;
 @Table(name = "users")
 @Entity
 @ToString
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class User implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -61,13 +58,9 @@ public class User implements Serializable {
     @Column(name = "parish", nullable = false)
     String parish;
 
-    @Column(name = "pickupBranch", updatable = true)
+    @Column(name = "pickupBranch")
     String pickUpBranch;
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY,
-            cascade = CascadeType.ALL)
-    @JsonIgnore
-    private List<Package> packages;
 
     private String role = ROLE_USER.name();
     private String[] authorities = ROLE_USER.getAuthorities();
@@ -81,11 +74,10 @@ public class User implements Serializable {
     @Column(name = "createdAt", nullable = false)
     Date createdAt = new Date();
 
-
     public User(UUID userId, Long trn, String firstName, String lastName,
                 Date dateOfBirth, String username, String email, String password,
                 String phoneNumber, String streetAddress, String parish, String pickUpBranch,
-                List<Package> packages, String role, String[] authorities, boolean isActive, boolean isNotLocked,
+                String role, String[] authorities, boolean isActive, boolean isNotLocked,
                 Date updatedAt, Date createdAt) {
         this.userId = userId;
         this.trn = trn;
@@ -99,7 +91,6 @@ public class User implements Serializable {
         this.streetAddress = streetAddress;
         this.parish = parish;
         this.pickUpBranch = pickUpBranch;
-        this.packages = packages;
         this.role = role;
         this.authorities = authorities;
         this.isActive = isActive;
@@ -138,9 +129,8 @@ public class User implements Serializable {
     }
 
     @JsonIgnore
-    public List<Package> getPackage() {
-        return packages;
+    @JsonProperty(value = "id")
+    public Long getId() {
+        return id;
     }
-
-
 }

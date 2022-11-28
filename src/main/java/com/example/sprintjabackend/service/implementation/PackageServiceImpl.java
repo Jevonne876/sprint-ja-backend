@@ -22,13 +22,13 @@ public class PackageServiceImpl implements PackageService {
     }
 
     @Override
-    public Package addNewPackage(String trackingNumber, String description, double weight, double cost, User user) {
+    public Package addNewPackage(String trackingNumber, String description, double weight, double cost, UUID userId) {
         Package aPackage = new Package();
         aPackage.setTrackingNumber(trackingNumber);
         aPackage.setDescription(description);
         aPackage.setWeight(weight);
         aPackage.setCost(cost);
-        aPackage.setUser(user);
+        aPackage.setUserId(userId);
         return packageRepository.save(aPackage);
     }
 
@@ -38,7 +38,14 @@ public class PackageServiceImpl implements PackageService {
     }
 
     @Override
-    public Page<Package> findAllByUserId(Long id, Pageable pageable) {
-        return packageRepository.findAllByUserId(id, pageable);
+    public Page<Package> findAllPackageByUserId(UUID userId, Pageable pageable) {
+        return packageRepository.findAllPackageByUserId(userId, pageable);
     }
+
+    @Override
+    public Package findByTrackingNumber(String trackingNumber) {
+        return packageRepository.findByTrackingNumber(trackingNumber);
+    }
+
+
 }
