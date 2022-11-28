@@ -1,13 +1,12 @@
 package com.example.sprintjabackend.service.implementation;
 
 import com.example.sprintjabackend.exception.domain.EmailExistException;
-import com.example.sprintjabackend.exception.domain.UserNotFoundException;
-import com.example.sprintjabackend.exception.domain.UsernameExistException;
+import com.example.sprintjabackend.exception.domain.PhoneNumberException;
+import com.example.sprintjabackend.exception.domain.TrnExistException;
 import com.example.sprintjabackend.model.User;
 import com.example.sprintjabackend.model.UserPrincipal;
 import com.example.sprintjabackend.repository.UserRepository;
 import com.example.sprintjabackend.service.UserService;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -19,9 +18,7 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.util.Date;
 
-import static com.example.sprintjabackend.constant.UserImplementationConstant.EMAIL_ALREADY_EXISTS;
-import static com.example.sprintjabackend.constant.UserImplementationConstant.NO_USER_FOUND_BY_EMAIL;
-import static org.apache.commons.lang3.StringUtils.EMPTY;
+import static com.example.sprintjabackend.constant.UserImplementationConstant.*;
 
 @Service
 @Transactional
@@ -42,9 +39,9 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     @Override
     public User register(Long trn, String firstName, String lastName,
                          Date dateOfBirth, String email, String password, String phoneNumber,
-                         String streetAddress, String parish, String pickUpBranch) throws UserNotFoundException, EmailExistException, UsernameExistException {
+                         String streetAddress, String parish, String pickUpBranch) throws PhoneNumberException, EmailExistException, TrnExistException {
 
-        validateNewUsernameAndEmail(EMPTY, email, email);
+        validateTrnAndEmail(trn, email, phoneNumber);
         User newUser = new User();
         newUser.setTrn(trn);
         newUser.setFirstName(firstName);
@@ -71,6 +68,16 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
+    public User findUserByTrn(Long trn) {
+        return this.userRepository.findUserByTrn(trn);
+    }
+
+    @Override
+    public User findUserByPhoneNumber(String phoneNumber) {
+        return this.userRepository.findUserByPhoneNumber(phoneNumber);
+    }
+
+    @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = userRepository.findUserByUsername(username);
         if (user == null) {
@@ -81,27 +88,23 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         }
     }
 
-    private void validateNewUsernameAndEmail(String currentUsername, String newUsername, String newEmail) throws UserNotFoundException, UsernameExistException, EmailExistException {
-        User userByNewUsername = findUserByUsername(newUsername);
+
+    private void validateTrnAndEmail(long newTrn, String newEmail, String newPhoneNumber) throws TrnExistException, EmailExistException, PhoneNumberException {
+
+        User userByNewTrn = findUserByTrn(newTrn);
         User userByNewEmail = findUserByEmail(newEmail);
-        if (StringUtils.isNotBlank(currentUsername)) {
-            User currentUser = findUserByUsername(currentUsername);
-            if (currentUser == null) {
-                throw new UserNotFoundException(NO_USER_FOUND_BY_EMAIL + currentUsername);
-            }
-            if (userByNewUsername != null && !currentUser.getId().equals(userByNewUsername.getId())) {
-                throw new UsernameExistException(EMAIL_ALREADY_EXISTS);
-            }
-            if (userByNewEmail != null && !currentUser.getId().equals(userByNewEmail.getId())) {
-                throw new EmailExistException(EMAIL_ALREADY_EXISTS);
-            }
-        } else {
-            if (userByNewUsername != null) {
-                throw new UsernameExistException(EMAIL_ALREADY_EXISTS);
-            }
-            if (userByNewEmail != null) {
-                throw new EmailExistException(EMAIL_ALREADY_EXISTS);
-            }
+        User userByNewPhoneNumber = findUserByPhoneNumber(newPhoneNumber);
+
+
+        if (userByNewTrn != null) {
+            throw new TrnExistException(TRN_ALREADY_EXISTS);
+        } else if (userByNewEmail != null) {
+            throw new EmailExistException(EMAIL_ALREADY_EXISTS);
+        } else if (userByNewPhoneNumber != null) {
+            throw new PhoneNumberException(PHONE_NUMBER_ALREADY_EXISTS);
+
         }
+
+
     }
 }

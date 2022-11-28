@@ -1,10 +1,7 @@
 package com.example.sprintjabackend.exception;
 
 import com.auth0.jwt.exceptions.TokenExpiredException;
-import com.example.sprintjabackend.exception.domain.EmailExistException;
-import com.example.sprintjabackend.exception.domain.EmailNotFoundException;
-import com.example.sprintjabackend.exception.domain.UserNotFoundException;
-import com.example.sprintjabackend.exception.domain.UsernameExistException;
+import com.example.sprintjabackend.exception.domain.*;
 import com.example.sprintjabackend.model.HttpResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,6 +20,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.NoHandlerFoundException;
 
 import javax.persistence.NoResultException;
+import javax.sound.midi.Track;
 import java.io.IOException;
 import java.util.Objects;
 
@@ -57,6 +55,21 @@ public class ExceptionHandling implements ErrorController {
 
     @ExceptionHandler(EmailExistException.class)
     public ResponseEntity<HttpResponse> emailExistException(EmailExistException exception) {
+        return createHttpResponse(BAD_REQUEST, exception.getMessage());
+    }
+
+    @ExceptionHandler(TrnExistException.class)
+    public ResponseEntity<HttpResponse> trnExistException(TrnExistException exception) {
+        return createHttpResponse(BAD_REQUEST, exception.getMessage());
+    }
+
+    @ExceptionHandler(PhoneNumberException.class)
+    public ResponseEntity<HttpResponse> phoneNumberExistException(PhoneNumberException exception) {
+        return createHttpResponse(BAD_REQUEST, exception.getMessage());
+    }
+
+    @ExceptionHandler(TrackingNumberException.class)
+    public ResponseEntity<HttpResponse> trackingNumberException(TrackingNumberException exception) {
         return createHttpResponse(BAD_REQUEST, exception.getMessage());
     }
 
@@ -113,7 +126,6 @@ public class ExceptionHandling implements ErrorController {
     public ResponseEntity<HttpResponse> notFound404() {
         return createHttpResponse(NOT_FOUND, "There is no mapping for this URL");
     }
-
 
 
     public String getErrorPath() {

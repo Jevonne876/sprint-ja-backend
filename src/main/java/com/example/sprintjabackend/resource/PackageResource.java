@@ -1,5 +1,6 @@
 package com.example.sprintjabackend.resource;
 
+import com.example.sprintjabackend.exception.domain.TrackingNumberException;
 import com.example.sprintjabackend.model.Package;
 import com.example.sprintjabackend.service.PackageService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,7 +41,7 @@ public class PackageResource {
     }
 
     @PostMapping(value = "add-new-package")
-    public ResponseEntity<Package> addNewPackage(@RequestBody Package data) {
+    public ResponseEntity<Package> addNewPackage(@RequestBody Package data) throws TrackingNumberException {
         Package newPackage;
         newPackage = packageService.addNewPackage(data.getTrackingNumber(),
                 data.getDescription(), data.getWeight(), data.getCost(), data.getUserId());
@@ -54,7 +55,7 @@ public class PackageResource {
                                                  @RequestParam double weight,
                                                  @RequestParam double cost,
                                                  @RequestParam UUID userId,
-                                                 @RequestParam String oldTrackingNumber) {
+                                                 @RequestParam String oldTrackingNumber) throws TrackingNumberException {
         Package updatedPackageData = new Package();
 
         updatedPackageData.setTrackingNumber(trackingNumber);
