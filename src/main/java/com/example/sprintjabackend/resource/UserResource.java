@@ -1,8 +1,6 @@
 package com.example.sprintjabackend.resource;
 
-import com.example.sprintjabackend.exception.domain.EmailExistException;
-import com.example.sprintjabackend.exception.domain.UserNotFoundException;
-import com.example.sprintjabackend.exception.domain.UsernameExistException;
+import com.example.sprintjabackend.exception.domain.*;
 import com.example.sprintjabackend.model.User;
 import com.example.sprintjabackend.model.UserPrincipal;
 import com.example.sprintjabackend.service.UserService;
@@ -36,7 +34,7 @@ public class UserResource {
     }
 
     @PostMapping(value = "register-new-user")
-    public ResponseEntity<User> registerUser(@RequestBody User user) throws UserNotFoundException, EmailExistException, UsernameExistException {
+    public ResponseEntity<User> registerUser(@RequestBody User user) throws EmailExistException, TrnExistException, PhoneNumberException {
         User newUser = new User();
         newUser = userService.register(user.getTrn(), user.getFirstName(), user.getLastName(),
                 user.getDateOfBirth(), user.getEmail(), user.getPassword(),
