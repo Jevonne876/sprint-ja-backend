@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.NoHandlerFoundException;
 
 import javax.persistence.NoResultException;
+import javax.sound.midi.Track;
 import java.io.IOException;
 import java.util.Objects;
 
@@ -64,6 +65,11 @@ public class ExceptionHandling implements ErrorController {
 
     @ExceptionHandler(PhoneNumberException.class)
     public ResponseEntity<HttpResponse> phoneNumberExistException(PhoneNumberException exception) {
+        return createHttpResponse(BAD_REQUEST, exception.getMessage());
+    }
+
+    @ExceptionHandler(TrackingNumberException.class)
+    public ResponseEntity<HttpResponse> trackingNumberException(TrackingNumberException exception) {
         return createHttpResponse(BAD_REQUEST, exception.getMessage());
     }
 

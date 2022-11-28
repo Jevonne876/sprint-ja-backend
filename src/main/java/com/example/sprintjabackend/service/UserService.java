@@ -12,7 +12,6 @@ public interface UserService {
                   String email, String password, String phoneNumber,
                   String address1, String address2, String pickUpBranch) throws EmailExistException, TrnExistException, PhoneNumberException;
 
-
     User findUserByUsername(String username);
 
     User findUserByEmail(String email);

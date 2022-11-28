@@ -1,5 +1,6 @@
 package com.example.sprintjabackend.service.implementation;
 
+import com.example.sprintjabackend.exception.domain.TrackingNumberException;
 import com.example.sprintjabackend.model.Package;
 import com.example.sprintjabackend.repository.PackageRepository;
 import com.example.sprintjabackend.service.PackageService;
@@ -9,6 +10,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
+
+import static com.example.sprintjabackend.constant.PackageConstant.TRACKING_NUMBER_FOUND;
 
 @Service
 public class PackageServiceImpl implements PackageService {
@@ -21,7 +24,8 @@ public class PackageServiceImpl implements PackageService {
     }
 
     @Override
-    public Package addNewPackage(String trackingNumber, String description, double weight, double cost, UUID userId) {
+    public Package addNewPackage(String trackingNumber, String description, double weight, double cost, UUID userId) throws TrackingNumberException {
+        validateTrackingNumber(trackingNumber);
         Package aPackage = new Package();
         aPackage.setTrackingNumber(trackingNumber);
         aPackage.setDescription(description);
@@ -47,20 +51,26 @@ public class PackageServiceImpl implements PackageService {
     }
 
     @Override
-    public Package updatePackage(String oldTrackingNumber, String trackingNumber, String description, double weight, double cost, UUID userId) {
+    public Package updatePackage(String oldTrackingNumber, String trackingNumber,
+                                 String description, double weight, double cost, UUID userId) throws TrackingNumberException {
 
         Package getPackageToBeUpdated = new Package();
         getPackageToBeUpdated = packageRepository.findByTrackingNumber(oldTrackingNumber);
-        if (getPackageToBeUpdated == null) {
-            System.out.println("No package was found with this tracking number.");
-            return null;
+        validateTrackingNumber(trackingNumber);
+        getPackageToBeUpdated.setTrackingNumber(trackingNumber);
+        getPackageToBeUpdated.setDescription(description);
+        getPackageToBeUpdated.setWeight(weight);
+        getPackageToBeUpdated.setCost(cost);
+        getPackageToBeUpdated.setUserId(userId);
+        return packageRepository.save(getPackageToBeUpdated);
+    }
+
+    private void validateTrackingNumber(String trackingNumber) throws TrackingNumberException {
+
+        Package findByTrackingNumber = packageRepository.findByTrackingNumber(trackingNumber);
+
+        if (findByTrackingNumber != null) {
+            throw new TrackingNumberException(TRACKING_NUMBER_FOUND);
         }
-        Package updatedPackage = new Package();
-        updatedPackage.setTrackingNumber(trackingNumber);
-        updatedPackage.setDescription(description);
-        updatedPackage.setWeight(weight);
-        updatedPackage.setCost(cost);
-        updatedPackage.setUserId(userId);
-        return packageRepository.save(updatedPackage);
     }
 }
