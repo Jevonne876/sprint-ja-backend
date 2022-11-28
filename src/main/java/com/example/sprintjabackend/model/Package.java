@@ -24,7 +24,7 @@ public class Package implements Serializable {
     @GeneratedValue(generator = "uuid2", strategy = GenerationType.IDENTITY)
     @Column(name = "package_id", nullable = false, updatable = false, unique = true)
     private UUID packageId = UUID.randomUUID();
-    @Column(name = "trackingNumber", unique = true, nullable = false)
+    @Column(name = "trackingNumber", nullable = false)
     private String trackingNumber;
 
     @Column(name = "description", nullable = false)
@@ -36,7 +36,7 @@ public class Package implements Serializable {
     @Column(name = "cost", nullable = false)
     private double cost;
 
-    @Column(name = "userId", nullable = false,updatable = false)
+    @Column(name = "userId", nullable = false, updatable = false)
     private UUID userId;
 
     @Column(name = "updatedAt", nullable = false)

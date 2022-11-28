@@ -1,7 +1,6 @@
 package com.example.sprintjabackend.service.implementation;
 
 import com.example.sprintjabackend.model.Package;
-import com.example.sprintjabackend.model.User;
 import com.example.sprintjabackend.repository.PackageRepository;
 import com.example.sprintjabackend.service.PackageService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,5 +46,21 @@ public class PackageServiceImpl implements PackageService {
         return packageRepository.findByTrackingNumber(trackingNumber);
     }
 
+    @Override
+    public Package updatePackage(String oldTrackingNumber, String trackingNumber, String description, double weight, double cost, UUID userId) {
 
+        Package getPackageToBeUpdated = new Package();
+        getPackageToBeUpdated = packageRepository.findByTrackingNumber(oldTrackingNumber);
+        if (getPackageToBeUpdated == null) {
+            System.out.println("No package was found with this tracking number.");
+            return null;
+        }
+        Package updatedPackage = new Package();
+        updatedPackage.setTrackingNumber(trackingNumber);
+        updatedPackage.setDescription(description);
+        updatedPackage.setWeight(weight);
+        updatedPackage.setCost(cost);
+        updatedPackage.setUserId(userId);
+        return packageRepository.save(updatedPackage);
+    }
 }

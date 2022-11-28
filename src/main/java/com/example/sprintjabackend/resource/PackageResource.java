@@ -1,9 +1,7 @@
 package com.example.sprintjabackend.resource;
 
 import com.example.sprintjabackend.model.Package;
-import com.example.sprintjabackend.model.User;
 import com.example.sprintjabackend.service.PackageService;
-import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -43,28 +41,31 @@ public class PackageResource {
 
     @PostMapping(value = "add-new-package")
     public ResponseEntity<Package> addNewPackage(@RequestBody Package data) {
-        Package newPackage = new Package();
+        Package newPackage;
         newPackage = packageService.addNewPackage(data.getTrackingNumber(),
                 data.getDescription(), data.getWeight(), data.getCost(), data.getUserId());
 
         return new ResponseEntity<>(newPackage, OK);
     }
 
-//    @PutMapping(value = "update-package/{oldTrackingNumber}")
-//    public ResponseEntity<Package> updatePackage(@RequestParam String trackingNumber,
-//                                                 @RequestParam String description,
-//                                                 @RequestParam double weight,
-//                                                 @RequestParam double cost,
-//                                                 @RequestParam UUID userId,
-//                                                 @PathVariable("trackingNumber") String oldTrackingNumber) {
-//        Package retrievedPackaged = new Package();
-//
-//        retrievedPackaged = packageService.findByTrackingNumber(oldTrackingNumber);
-//        if (retrievedPackaged == null) {
-//            System.out.println("no package found with tracking number");
-//            return null;
-//        }
-//        return new ResponseEntity<>(packageService.updatePackage(trackingNumber, description, weight, cost, userId), OK);
-//    }
+    @PutMapping(value = "update-package")
+    public ResponseEntity<Package> updatePackage(@RequestParam String trackingNumber,
+                                                 @RequestParam String description,
+                                                 @RequestParam double weight,
+                                                 @RequestParam double cost,
+                                                 @RequestParam UUID userId,
+                                                 @RequestParam String oldTrackingNumber) {
+        Package updatedPackageData = new Package();
+
+        updatedPackageData.setTrackingNumber(trackingNumber);
+        updatedPackageData.setDescription(description);
+        updatedPackageData.setWeight(weight);
+        updatedPackageData.setCost(cost);
+        updatedPackageData.setUserId(userId);
+
+        return new ResponseEntity<>(packageService.updatePackage(oldTrackingNumber, trackingNumber, description, weight, cost, userId), OK);
+
+
+    }
 
 }

@@ -63,4 +63,6 @@ public class UserResource {
         headers.add(JWT_TOKEN_HEADER, jwtTokenProvider.generateJwtToken(user));
         return headers;
     }
+
+
 }
