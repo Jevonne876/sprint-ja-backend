@@ -1,8 +1,6 @@
 package com.example.sprintjabackend.constant;
 
 public class SecurityConstant {
-    //token expiration time in millisecond = 5 days
-    //public static final long TOKEN_EXPIRATION_TIME = 432_000_000;
 
     //token expiration time in millisecond = 24 hours
     public static final long TOKEN_EXPIRATION_TIME = 86_400_000;
