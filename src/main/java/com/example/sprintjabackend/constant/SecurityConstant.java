@@ -1,8 +1,6 @@
 package com.example.sprintjabackend.constant;
 
 public class SecurityConstant {
-    //token expiration time in millisecond = 5 days
-    //public static final long TOKEN_EXPIRATION_TIME = 432_000_000;
 
     //token expiration time in millisecond = 24 hours
     public static final long TOKEN_EXPIRATION_TIME = 86_400_000;
@@ -18,8 +16,7 @@ public class SecurityConstant {
     public static final String ACCESS_DENIED_MESSAGE = "You do not have permission to access this page";
     public static final String OPTIONS_HTTP_METHOD = "OPTIONS";
     public static final String[] ADMIN_URLS = {"/admin/login", "/admin/sign-up", "/admin/dashboard"};
-    public static final String[] PUBLIC_URLS = {"**"};
-
+    public static final String[] PUBLIC_URLS = {"/api/v1/register-new-user", "/api/v1/user-login"};
 
 
 }

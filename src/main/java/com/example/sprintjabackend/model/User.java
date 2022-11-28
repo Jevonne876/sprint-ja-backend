@@ -1,13 +1,11 @@
 package com.example.sprintjabackend.model;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import com.fasterxml.jackson.annotation.*;
+import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.UUID;
 
@@ -16,8 +14,10 @@ import static com.example.sprintjabackend.enums.Role.ROLE_USER;
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "users")
 @Entity
+@ToString
 public class User implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -52,18 +52,19 @@ public class User implements Serializable {
     @Column(name = "phone", nullable = false, unique = true)
     String phoneNumber;
 
-    @Column(name = "address1", nullable = false, updatable = true)
-    String address1;
+    @Column(name = "streetAddress", nullable = false)
+    String streetAddress;
 
-    @Column(name = "address2")
-    String address2;
+    @Column(name = "parish", nullable = false)
+    String parish;
 
-    @Column(name = "pickupBranch", updatable = true)
+    @Column(name = "pickupBranch")
     String pickUpBranch;
+
 
     private String role = ROLE_USER.name();
     private String[] authorities = ROLE_USER.getAuthorities();
-    ;
+
     private boolean isActive = true;
     private boolean isNotLocked = true;
 
@@ -73,37 +74,11 @@ public class User implements Serializable {
     @Column(name = "createdAt", nullable = false)
     Date createdAt = new Date();
 
-
-    public User(Long id, UUID userId, Long trn, String firstName,
-                String lastName, Date dateOfBirth, String username, String email,
-                String password, String phoneNumber, String address1, String address2,
-                String pickUpBranch, String role, String[] authorities, boolean isActive,
-                boolean isNotLocked, Date updatedAt, Date createdAt) {
-        this.id = id;
-        this.userId = userId;
-        this.trn = trn;
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.dateOfBirth = dateOfBirth;
-        this.username = username;
-        this.email = email;
-        this.password = password;
-        this.phoneNumber = phoneNumber;
-        this.address1 = address1;
-        this.address2 = address2;
-        this.pickUpBranch = pickUpBranch;
-        this.role = role;
-        this.authorities = authorities;
-        this.isActive = isActive;
-        this.isNotLocked = isNotLocked;
-        this.updatedAt = updatedAt;
-        this.createdAt = createdAt;
-    }
-
     public User(UUID userId, Long trn, String firstName, String lastName,
-                Date dateOfBirth, String username, String email, String password, String
-                        phoneNumber, String address1, String address2, String pickUpBranch,
-                String role, String[] authorities, boolean isActive, boolean isNotLocked, Date updatedAt, Date createdAt) {
+                Date dateOfBirth, String username, String email, String password,
+                String phoneNumber, String streetAddress, String parish, String pickUpBranch,
+                String role, String[] authorities, boolean isActive, boolean isNotLocked,
+                Date updatedAt, Date createdAt) {
         this.userId = userId;
         this.trn = trn;
         this.firstName = firstName;
@@ -113,8 +88,8 @@ public class User implements Serializable {
         this.email = email;
         this.password = password;
         this.phoneNumber = phoneNumber;
-        this.address1 = address1;
-        this.address2 = address2;
+        this.streetAddress = streetAddress;
+        this.parish = parish;
         this.pickUpBranch = pickUpBranch;
         this.role = role;
         this.authorities = authorities;
@@ -126,7 +101,7 @@ public class User implements Serializable {
 
     public User(Long trn, String firstName, String lastName, Date dateOfBirth,
                 String email, String password, String phoneNumber,
-                String address1, String address2, String pickUpBranch) {
+                String streetAddress, String parish, String pickUpBranch) {
         this.userId = UUID.randomUUID();
         this.trn = trn;
         this.firstName = firstName;
@@ -136,8 +111,8 @@ public class User implements Serializable {
         this.email = email;
         this.password = password;
         this.phoneNumber = phoneNumber;
-        this.address1 = address1;
-        this.address2 = address2;
+        this.streetAddress = streetAddress;
+        this.parish = parish;
         this.pickUpBranch = pickUpBranch;
         this.role = ROLE_USER.name();
         this.authorities = ROLE_USER.getAuthorities();
@@ -147,28 +122,15 @@ public class User implements Serializable {
         this.createdAt = new Date();
     }
 
-    @Override
-    public String toString() {
-        return "User{" +
-                "id=" + id +
-                ", userId=" + userId +
-                ", trn=" + trn +
-                ", firstName='" + firstName + '\'' +
-                ", lastName='" + lastName + '\'' +
-                ", dateOfBirth=" + dateOfBirth +
-                ", username='" + username + '\'' +
-                ", email='" + email + '\'' +
-                ", password='" + password + '\'' +
-                ", phoneNumber='" + phoneNumber + '\'' +
-                ", address1='" + address1 + '\'' +
-                ", address2='" + address2 + '\'' +
-                ", pickUpBranch='" + pickUpBranch + '\'' +
-                ", role='" + role + '\'' +
-                ", authorities=" + Arrays.toString(authorities) +
-                ", isActive=" + isActive +
-                ", isNotLocked=" + isNotLocked +
-                ", updatedAt=" + updatedAt +
-                ", createdAt=" + createdAt +
-                '}';
+    @JsonIgnore
+    @JsonProperty(value = "password")
+    public String getPassword() {
+        return password;
+    }
+
+    @JsonIgnore
+    @JsonProperty(value = "id")
+    public Long getId() {
+        return id;
     }
 }

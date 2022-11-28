@@ -42,7 +42,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     @Override
     public User register(Long trn, String firstName, String lastName,
                          Date dateOfBirth, String email, String password, String phoneNumber,
-                         String address1, String address2, String pickUpBranch) throws UserNotFoundException, EmailExistException, UsernameExistException {
+                         String streetAddress, String parish, String pickUpBranch) throws UserNotFoundException, EmailExistException, UsernameExistException {
 
         validateNewUsernameAndEmail(EMPTY, email, email);
         User newUser = new User();
@@ -54,8 +54,8 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         newUser.setUsername(email);
         newUser.setPassword(encoder.encode(password));
         newUser.setPhoneNumber(phoneNumber);
-        newUser.setAddress1(address1);
-        newUser.setAddress2(address2);
+        newUser.setStreetAddress(streetAddress);
+        newUser.setParish(parish);
         newUser.setPickUpBranch(pickUpBranch);
         return this.userRepository.save(newUser);
     }
