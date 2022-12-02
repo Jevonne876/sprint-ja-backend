@@ -15,8 +15,10 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.mail.MessagingException;
 import javax.transaction.Transactional;
 import java.util.Date;
+import java.util.UUID;
 
 import static com.example.sprintjabackend.constant.UserImplementationConstant.*;
 
@@ -29,17 +31,20 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     private final BCryptPasswordEncoder encoder;
 
+    private final EmailService emailService;
+
     @Autowired
-    public UserServiceImpl(UserRepository userRepository, BCryptPasswordEncoder encoder) {
+    public UserServiceImpl(UserRepository userRepository, BCryptPasswordEncoder encoder, EmailService emailService) {
         this.userRepository = userRepository;
         this.encoder = encoder;
+        this.emailService = emailService;
     }
 
 
     @Override
     public User register(Long trn, String firstName, String lastName,
                          Date dateOfBirth, String email, String password, String phoneNumber,
-                         String streetAddress, String parish, String pickUpBranch) throws PhoneNumberException, EmailExistException, TrnExistException {
+                         String streetAddress, String parish, String pickUpBranch) throws PhoneNumberException, EmailExistException, TrnExistException, MessagingException {
 
         validateTrnAndEmail(trn, email, phoneNumber);
         User newUser = new User();
@@ -54,7 +59,42 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         newUser.setStreetAddress(streetAddress);
         newUser.setParish(parish);
         newUser.setPickUpBranch(pickUpBranch);
-        return this.userRepository.save(newUser);
+        this.emailService.sendNewPasswordEmail(firstName, lastName, email);
+        return null;
+//        return this.userRepository.save(newUser);
+    }
+
+    @Override
+    public User updateUser(UUID userId, Long newTrn, String newFirstName, String newLastName,
+                           Date newDateOfBirth, String newEmail, String newPassword, String newPhoneNumber,
+                           String newAddress1, String newAddress2, String newPickUpBranch)
+            throws EmailExistException, TrnExistException, PhoneNumberException {
+
+        User user = findUserByUserId(userId);
+
+        if (user.getTrn().equals(newTrn) && user.getEmail().equals(newEmail) && user.getPhoneNumber().equals(newPhoneNumber)) {
+            user.setFirstName(newFirstName);
+            user.setLastName(newLastName);
+            user.setDateOfBirth(newDateOfBirth);
+            user.setStreetAddress(newAddress1);
+            user.setParish(newAddress2);
+            user.setPickUpBranch(newPickUpBranch);
+            return this.userRepository.save(user);
+        } else {
+
+            validateTrnAndEmail(newTrn, newEmail, newPhoneNumber);
+            user.setTrn(newTrn);
+            user.setFirstName(newFirstName);
+            user.setLastName(newLastName);
+            user.setDateOfBirth(newDateOfBirth);
+            user.setEmail(newEmail);
+            user.setPassword(newPassword);
+            user.setPhoneNumber(newPhoneNumber);
+            user.setStreetAddress(newAddress1);
+            user.setParish(newAddress2);
+            user.setPickUpBranch(newPickUpBranch);
+            return this.userRepository.save(user);
+        }
     }
 
     @Override
@@ -75,6 +115,11 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     @Override
     public User findUserByPhoneNumber(String phoneNumber) {
         return this.userRepository.findUserByPhoneNumber(phoneNumber);
+    }
+
+    @Override
+    public User findUserByUserId(UUID userId) {
+        return userRepository.findUserByUserId(userId);
     }
 
     @Override
