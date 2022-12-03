@@ -59,9 +59,8 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         newUser.setStreetAddress(streetAddress);
         newUser.setParish(parish);
         newUser.setPickUpBranch(pickUpBranch);
-        this.emailService.sendNewPasswordEmail(firstName, lastName, email);
-        return null;
-//        return this.userRepository.save(newUser);
+        //this.emailService.sendNewPasswordEmail(firstName, lastName, email);
+        return this.userRepository.save(newUser);
     }
 
     @Override
@@ -73,6 +72,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         User user = findUserByUserId(userId);
 
         if (user.getTrn().equals(newTrn) && user.getEmail().equals(newEmail) && user.getPhoneNumber().equals(newPhoneNumber)) {
+            user.setTrn(newTrn);
             user.setFirstName(newFirstName);
             user.setLastName(newLastName);
             user.setDateOfBirth(newDateOfBirth);
@@ -88,7 +88,6 @@ public class UserServiceImpl implements UserService, UserDetailsService {
             user.setLastName(newLastName);
             user.setDateOfBirth(newDateOfBirth);
             user.setEmail(newEmail);
-            user.setPassword(newPassword);
             user.setPhoneNumber(newPhoneNumber);
             user.setStreetAddress(newAddress1);
             user.setParish(newAddress2);
