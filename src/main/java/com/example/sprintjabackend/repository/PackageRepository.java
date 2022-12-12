@@ -19,9 +19,9 @@ public interface PackageRepository extends CrudRepository <Package, Long> {
 
     Package findByTrackingNumber(String trackingNumber);
 
-    List<Package> findAllByUserIdAndStatus(UUID userId,String status);
-
     Long countByStatus(String status);
+
+    List<Package> findByUserIdAndStatus(UUID uuid, String status);
 
 
 }

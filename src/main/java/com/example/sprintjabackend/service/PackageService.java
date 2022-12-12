@@ -25,11 +25,11 @@ public interface PackageService {
                           String description, double weight,
                           double cost, UUID userId) throws TrackingNumberException;
 
-    List<Package> findAllByUserIdAndStatus(UUID userId );
+
 
     Long  countByStatus(String status);
 
     Package  getFinalCount();
 
-    List<Package> findAllByUserIdAndStatus(UUID userId, String status);
+    List<Package> findByUserIdAndStatus(UUID uuid,String Status);
 }

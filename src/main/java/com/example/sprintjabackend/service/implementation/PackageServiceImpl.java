@@ -20,10 +20,12 @@ import static com.example.sprintjabackend.constant.PackageConstant.TRACKING_NUMB
 public class PackageServiceImpl implements PackageService {
 
     private final PackageRepository packageRepository;
+    private  final EmailService emailService;
 
     @Autowired
-    public PackageServiceImpl(PackageRepository packageRepository) {
+    public PackageServiceImpl(PackageRepository packageRepository, EmailService emailService) {
         this.packageRepository = packageRepository;
+        this.emailService = emailService;
     }
 
     @Override
@@ -37,7 +39,10 @@ public class PackageServiceImpl implements PackageService {
         aPackage.setCost(cost);
         aPackage.setUserId(userId);
         aPackage.setStatus(PackageStatus.DEFAULT.toString());
-        return packageRepository.save(aPackage);
+        packageRepository.save(aPackage);
+
+
+        return aPackage;
     }
 
     @Override
@@ -72,8 +77,8 @@ public class PackageServiceImpl implements PackageService {
     }
 
     @Override
-    public List<Package> findAllByUserIdAndStatus(UUID userId, String status) {
-        return null;
+    public List<Package> findByUserIdAndStatus(UUID uuid, String Status) {
+        return packageRepository.findByUserIdAndStatus(uuid,PackageStatus.DEFAULT.toString());
     }
 
 
@@ -94,10 +99,7 @@ public class PackageServiceImpl implements PackageService {
         return packageRepository.save(getPackageToBeUpdated);
     }
 
-    @Override
-    public List<Package> findAllByUserIdAndStatus(UUID userId) {
-        return packageRepository.findAllByUserIdAndStatus(userId, PackageStatus.DEFAULT.toString());
-    }
+
 
 
     private void validateTrackingNumber(String trackingNumber) throws TrackingNumberException {
