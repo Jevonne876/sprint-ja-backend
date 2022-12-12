@@ -10,7 +10,7 @@ import org.springframework.data.repository.CrudRepository;
 import java.util.List;
 import java.util.UUID;
 
-public interface PackageRepository extends CrudRepository <Package, Long> {
+public interface PackageRepository extends CrudRepository<Package, Long> {
 
 
     Page<Package> findAll(Pageable pageable);

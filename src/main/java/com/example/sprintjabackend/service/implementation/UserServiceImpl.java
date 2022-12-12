@@ -59,8 +59,9 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         newUser.setStreetAddress(streetAddress);
         newUser.setParish(parish);
         newUser.setPickUpBranch(pickUpBranch);
-        //this.emailService.sendNewPasswordEmail(firstName, lastName, email);
-        return this.userRepository.save(newUser);
+        this.userRepository.save(newUser);
+        this.emailService.newUserEmail(firstName,email);
+        return  newUser;
     }
 
     @Override
