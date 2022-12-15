@@ -26,7 +26,7 @@ public class EmailService {
         smtpTransport.close();
     }
 
-    public void sendingQuery(String fullName, String email, int number, String text) throws MessagingException {
+    public void sendingQuery(String fullName, String email, String number, String text) throws MessagingException {
         Message message = queryEmail(fullName, email, number, text);
         SMTPTransport smtpTransport = (SMTPTransport) getEmailSession().getTransport(SIMPLE_MAIL_TRANSFER_PROTOCOL);
         smtpTransport.connect(GMAIL_SMTP_SERVER, USERNAME, PASSWORD);
@@ -68,13 +68,14 @@ public class EmailService {
     }
 
 
-    private Message queryEmail(String fullName, String email, int number, String text) throws MessagingException {
+    private Message queryEmail(String fullName, String email, String number, String text) throws MessagingException {
         Message message = new MimeMessage(getEmailSession());
         message.setFrom(new InternetAddress(FROM_EMAIL));
-        message.setRecipients(TO, InternetAddress.parse(FROM_EMAIL, false));
+        message.setFrom(new InternetAddress(FROM_EMAIL));
+        message.setRecipients(TO, InternetAddress.parse("jevonne63@gmail.com", false));
         message.setRecipients(CC, InternetAddress.parse(CC_EMAIL, false));
-        message.setSubject("New Query");
-        message.setText(fullName + " " + email + " " + number + "\n\n " + " Message :" + text);
+        message.setSubject("NEW QUERY");
+        message.setText("FullName:" + fullName + "  \n\n" +"Email: " + email + " \n\n" + "PhoneNumber: "+ number + "\n\n " + " Query: " + text);
         message.setSentDate(new Date());
         message.saveChanges();
         return message;

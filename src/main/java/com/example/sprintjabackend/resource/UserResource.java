@@ -1,6 +1,9 @@
 package com.example.sprintjabackend.resource;
 
-import com.example.sprintjabackend.exception.domain.*;
+import com.example.sprintjabackend.exception.domain.EmailExistException;
+import com.example.sprintjabackend.exception.domain.EmailNotFoundException;
+import com.example.sprintjabackend.exception.domain.PhoneNumberException;
+import com.example.sprintjabackend.exception.domain.TrnExistException;
 import com.example.sprintjabackend.model.HttpResponse;
 import com.example.sprintjabackend.model.User;
 import com.example.sprintjabackend.model.UserPrincipal;
