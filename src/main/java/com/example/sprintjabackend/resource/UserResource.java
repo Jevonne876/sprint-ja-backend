@@ -1,12 +1,14 @@
 package com.example.sprintjabackend.resource;
 
 import com.example.sprintjabackend.exception.domain.*;
+import com.example.sprintjabackend.model.HttpResponse;
 import com.example.sprintjabackend.model.User;
 import com.example.sprintjabackend.model.UserPrincipal;
 import com.example.sprintjabackend.service.UserService;
 import com.example.sprintjabackend.utility.JwtTokenProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -73,6 +75,14 @@ public class UserResource {
         return new ResponseEntity<>(loggedInUser, httpHeaders, OK);
     }
 
+
+
+    @GetMapping("/reset-password/{email}")
+    public ResponseEntity<HttpResponse> resetPassword(@PathVariable("email") String email) throws MessagingException, EmailNotFoundException {
+        userService.resetPassword(email);
+        return response(OK, "" + email);
+    }
+
     private void authenticate(String username, String password) {
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
     }
@@ -81,6 +91,11 @@ public class UserResource {
         HttpHeaders headers = new HttpHeaders();
         headers.add(JWT_TOKEN_HEADER, jwtTokenProvider.generateJwtToken(user));
         return headers;
+    }
+
+    private ResponseEntity<HttpResponse> response(HttpStatus httpStatus, String message) {
+        return new ResponseEntity<>(new HttpResponse(httpStatus.value(), httpStatus, httpStatus.getReasonPhrase().toUpperCase(),
+                message), httpStatus);
     }
 
 

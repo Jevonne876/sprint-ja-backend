@@ -1,5 +1,6 @@
 package com.example.sprintjabackend.service.implementation;
 
+import com.example.sprintjabackend.enums.PackageStatus;
 import com.example.sprintjabackend.exception.domain.TrackingNumberException;
 import com.example.sprintjabackend.model.Package;
 import com.example.sprintjabackend.repository.PackageRepository;
@@ -9,6 +10,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 import static com.example.sprintjabackend.constant.PackageConstant.TRACKING_NUMBER_FOUND;
@@ -17,22 +20,29 @@ import static com.example.sprintjabackend.constant.PackageConstant.TRACKING_NUMB
 public class PackageServiceImpl implements PackageService {
 
     private final PackageRepository packageRepository;
+    private final EmailService emailService;
 
     @Autowired
-    public PackageServiceImpl(PackageRepository packageRepository) {
+    public PackageServiceImpl(PackageRepository packageRepository, EmailService emailService) {
         this.packageRepository = packageRepository;
+        this.emailService = emailService;
     }
 
     @Override
-    public Package addNewPackage(String trackingNumber, String description, double weight, double cost, UUID userId) throws TrackingNumberException {
+    public Package addNewPackage(String trackingNumber, String courier, String description, double weight, double cost, UUID userId) throws TrackingNumberException {
         validateTrackingNumber(trackingNumber);
         Package aPackage = new Package();
         aPackage.setTrackingNumber(trackingNumber);
+        aPackage.setCourier(courier);
         aPackage.setDescription(description);
         aPackage.setWeight(weight);
         aPackage.setCost(cost);
         aPackage.setUserId(userId);
-        return packageRepository.save(aPackage);
+        aPackage.setStatus(PackageStatus.NOT_SHIPPED.toString());
+        packageRepository.save(aPackage);
+
+
+        return aPackage;
     }
 
     @Override
@@ -45,25 +55,50 @@ public class PackageServiceImpl implements PackageService {
         return packageRepository.findAllPackageByUserId(userId, pageable);
     }
 
+
     @Override
     public Package findByTrackingNumber(String trackingNumber) {
         return packageRepository.findByTrackingNumber(trackingNumber);
     }
 
     @Override
-    public Package updatePackage(String oldTrackingNumber, String trackingNumber,
+    public Long countByStatus(String status) {
+        return packageRepository.countByStatus(status.toString());
+    }
+
+    public Package getFinalCount() {
+        Package aPackage = new Package();
+
+        aPackage.setTotalPackagesNotShipped(packageRepository.countByStatus(PackageStatus.DEFAULT.toString()));
+        aPackage.setTotalPackagesShipped(packageRepository.countByStatus(PackageStatus.SHIPPED.toString()));
+        aPackage.setTotalPackagesReadyForPickUp(packageRepository.countByStatus(PackageStatus.READY_FOR_PICKUP.toString()));
+
+        return aPackage;
+    }
+
+    @Override
+    public List<Package> findByUserIdAndStatus(UUID uuid, String Status) {
+        return packageRepository.findByUserIdAndStatus(uuid, PackageStatus.DEFAULT.toString());
+    }
+
+
+    @Override
+    public Package updatePackage(String oldTrackingNumber, String trackingNumber, String courier,
                                  String description, double weight, double cost, UUID userId) throws TrackingNumberException {
 
         Package getPackageToBeUpdated = new Package();
         getPackageToBeUpdated = packageRepository.findByTrackingNumber(oldTrackingNumber);
         validateTrackingNumber(trackingNumber);
         getPackageToBeUpdated.setTrackingNumber(trackingNumber);
+        getPackageToBeUpdated.setCourier(courier);
         getPackageToBeUpdated.setDescription(description);
         getPackageToBeUpdated.setWeight(weight);
         getPackageToBeUpdated.setCost(cost);
         getPackageToBeUpdated.setUserId(userId);
+        getPackageToBeUpdated.setUpdatedAt(new Date());
         return packageRepository.save(getPackageToBeUpdated);
     }
+
 
     private void validateTrackingNumber(String trackingNumber) throws TrackingNumberException {
 

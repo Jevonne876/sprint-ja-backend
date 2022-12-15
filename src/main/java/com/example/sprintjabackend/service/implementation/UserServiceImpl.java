@@ -1,12 +1,14 @@
 package com.example.sprintjabackend.service.implementation;
 
 import com.example.sprintjabackend.exception.domain.EmailExistException;
+import com.example.sprintjabackend.exception.domain.EmailNotFoundException;
 import com.example.sprintjabackend.exception.domain.PhoneNumberException;
 import com.example.sprintjabackend.exception.domain.TrnExistException;
 import com.example.sprintjabackend.model.User;
 import com.example.sprintjabackend.model.UserPrincipal;
 import com.example.sprintjabackend.repository.UserRepository;
 import com.example.sprintjabackend.service.UserService;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -59,8 +61,9 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         newUser.setStreetAddress(streetAddress);
         newUser.setParish(parish);
         newUser.setPickUpBranch(pickUpBranch);
-        //this.emailService.sendNewPasswordEmail(firstName, lastName, email);
-        return this.userRepository.save(newUser);
+        this.userRepository.save(newUser);
+        this.emailService.newUserEmail(firstName, email);
+        return newUser;
     }
 
     @Override
@@ -132,6 +135,18 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         }
     }
 
+    @Override
+    public void resetPassword(String email) throws EmailNotFoundException, MessagingException {
+        User user = userRepository.findUserByEmail(email);
+        if (user == null) {
+            throw new EmailNotFoundException(NO_USER_FOUND_BY_EMAIL + email);
+        }
+        String password = generatePassword();
+        user.setPassword(encoder.encode(password));
+        userRepository.save(user);
+        this.emailService.sendNewPasswordEmail(user.getFirstName(), password, user.getEmail());
+
+    }
 
     private void validateTrnAndEmail(long newTrn, String newEmail, String newPhoneNumber) throws TrnExistException, EmailExistException, PhoneNumberException {
 
@@ -149,6 +164,10 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
         }
 
-
     }
+
+    private String generatePassword() {
+        return RandomStringUtils.randomAlphanumeric(10);
+    }
+
 }

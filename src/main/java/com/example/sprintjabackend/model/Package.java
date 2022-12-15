@@ -1,5 +1,6 @@
 package com.example.sprintjabackend.model;
 
+import com.example.sprintjabackend.enums.PackageStatus;
 import com.fasterxml.jackson.annotation.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -27,6 +28,9 @@ public class Package implements Serializable {
     @Column(name = "trackingNumber", nullable = false)
     private String trackingNumber;
 
+    @Column(name = "courier", nullable = false)
+    private String courier;
+
     @Column(name = "description", nullable = false)
     private String description;
 
@@ -39,6 +43,20 @@ public class Package implements Serializable {
     @Column(name = "userId", nullable = false, updatable = false)
     private UUID userId;
 
+    @Column(name = "status")
+    private String status;
+
+
+    @Column(name = "totalPackagesNotShipped", nullable = true, updatable = true)
+    private Long totalPackagesNotShipped;
+
+
+    @Column(name = "totalPackagesShipped", nullable = true, updatable = true)
+    private Long totalPackagesShipped;
+
+    @Column(name = "totalPackagesReadyForPickup", nullable = true, updatable = true)
+    private Long totalPackagesReadyForPickUp;
+
     @Column(name = "updatedAt", nullable = false)
     Date updatedAt = new Date();
 
@@ -46,23 +64,27 @@ public class Package implements Serializable {
     Date createdAt = new Date();
 
 
-    public Package(UUID packageId, String trackingNumber,
-                   String description, double weight, double cost, Date updatedAt, Date createdAt) {
+    public Package(UUID packageId, String trackingNumber, String courier, String description,
+                   double weight, double cost, UUID userId, Date updatedAt, Date createdAt) {
         this.packageId = packageId;
         this.trackingNumber = trackingNumber;
-        this.description = description;
-        this.weight = weight;
-        this.cost = cost;
-        this.updatedAt = updatedAt;
-        this.createdAt = createdAt;
-    }
-
-    public Package(String trackingNumber, String description, double weight, double cost, UUID userId) {
-        this.trackingNumber = trackingNumber;
+        this.courier = courier;
         this.description = description;
         this.weight = weight;
         this.cost = cost;
         this.userId = userId;
+        this.updatedAt = updatedAt;
+        this.createdAt = createdAt;
+    }
+
+    public Package(String trackingNumber, String courier, String description, double weight, double cost, UUID userId) {
+        this.trackingNumber = trackingNumber;
+        this.courier = courier;
+        this.description = description;
+        this.weight = weight;
+        this.cost = cost;
+        this.userId = userId;
+        this.status = PackageStatus.DEFAULT.toString();
         this.updatedAt = new Date();
         this.createdAt = new Date();
     }
