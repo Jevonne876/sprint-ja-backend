@@ -69,7 +69,7 @@ public class PackageServiceImpl implements PackageService {
     public Package getFinalCount() {
         Package aPackage = new Package();
 
-        aPackage.setTotalPackagesNotShipped(packageRepository.countByStatus(PackageStatus.DEFAULT.toString()));
+        aPackage.setTotalPackagesNotShipped(packageRepository.countByStatus(PackageStatus.NOT_SHIPPED.toString()));
         aPackage.setTotalPackagesShipped(packageRepository.countByStatus(PackageStatus.SHIPPED.toString()));
         aPackage.setTotalPackagesReadyForPickUp(packageRepository.countByStatus(PackageStatus.READY_FOR_PICKUP.toString()));
 
@@ -78,7 +78,7 @@ public class PackageServiceImpl implements PackageService {
 
     @Override
     public List<Package> findByUserIdAndStatus(UUID uuid, String Status) {
-        return packageRepository.findByUserIdAndStatus(uuid, PackageStatus.DEFAULT.toString());
+        return packageRepository.findByUserIdAndStatus(uuid, PackageStatus.NOT_SHIPPED.toString());
     }
 
 
