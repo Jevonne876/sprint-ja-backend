@@ -20,7 +20,7 @@ import static com.example.sprintjabackend.constant.PackageConstant.TRACKING_NUMB
 public class PackageServiceImpl implements PackageService {
 
     private final PackageRepository packageRepository;
-    private  final EmailService emailService;
+    private final EmailService emailService;
 
     @Autowired
     public PackageServiceImpl(PackageRepository packageRepository, EmailService emailService) {
@@ -38,7 +38,7 @@ public class PackageServiceImpl implements PackageService {
         aPackage.setWeight(weight);
         aPackage.setCost(cost);
         aPackage.setUserId(userId);
-        aPackage.setStatus(PackageStatus.DEFAULT.toString());
+        aPackage.setStatus(PackageStatus.NOT_SHIPPED.toString());
         packageRepository.save(aPackage);
 
 
@@ -78,7 +78,7 @@ public class PackageServiceImpl implements PackageService {
 
     @Override
     public List<Package> findByUserIdAndStatus(UUID uuid, String Status) {
-        return packageRepository.findByUserIdAndStatus(uuid,PackageStatus.DEFAULT.toString());
+        return packageRepository.findByUserIdAndStatus(uuid, PackageStatus.DEFAULT.toString());
     }
 
 
@@ -98,8 +98,6 @@ public class PackageServiceImpl implements PackageService {
         getPackageToBeUpdated.setUpdatedAt(new Date());
         return packageRepository.save(getPackageToBeUpdated);
     }
-
-
 
 
     private void validateTrackingNumber(String trackingNumber) throws TrackingNumberException {
