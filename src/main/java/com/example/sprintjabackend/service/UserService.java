@@ -1,6 +1,7 @@
 package com.example.sprintjabackend.service;
 
 import com.example.sprintjabackend.exception.domain.EmailExistException;
+import com.example.sprintjabackend.exception.domain.EmailNotFoundException;
 import com.example.sprintjabackend.exception.domain.PhoneNumberException;
 import com.example.sprintjabackend.exception.domain.TrnExistException;
 import com.example.sprintjabackend.model.User;
@@ -29,4 +30,6 @@ public interface UserService {
     User findUserByPhoneNumber(String phoneNumber);
 
     User findUserByUserId(UUID userId);
+
+    void resetPassword(String email) throws EmailNotFoundException, MessagingException;
 }
