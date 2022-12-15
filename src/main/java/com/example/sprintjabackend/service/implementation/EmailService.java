@@ -34,13 +34,34 @@ public class EmailService {
         smtpTransport.close();
     }
 
+
+    public void sendNewPasswordEmail(String firstName, String password, String email) throws MessagingException {
+        Message message = createEmail(firstName, password, email);
+        SMTPTransport smtpTransport = (SMTPTransport) getEmailSession().getTransport(SIMPLE_MAIL_TRANSFER_PROTOCOL);
+        smtpTransport.connect(GMAIL_SMTP_SERVER, USERNAME, PASSWORD);
+        smtpTransport.sendMessage(message, message.getAllRecipients());
+        smtpTransport.close();
+    }
+
+    private Message createEmail(String firstName, String password, String email) throws MessagingException {
+        Message message = new MimeMessage(getEmailSession());
+        message.setFrom(new InternetAddress(FROM_EMAIL));
+        message.setRecipients(TO, InternetAddress.parse(email, false));
+        message.setRecipients(CC, InternetAddress.parse(CC_EMAIL, false));
+        message.setSubject(EMAIL_SUBJECT);
+        message.setText("Hello " + firstName + ", \n \n Your new account password is: " + password + "\n \n SprintJA Limited");
+        message.setSentDate(new Date());
+        message.saveChanges();
+        return message;
+    }
+
     private Message createEmail(String firstName, String email) throws MessagingException {
         Message message = new MimeMessage(getEmailSession());
         message.setFrom(new InternetAddress("info@sprintja.com"));
         message.setRecipients(TO, InternetAddress.parse(email, false));
         message.setRecipients(CC, InternetAddress.parse(CC_EMAIL, false));
         message.setSubject("New USER");
-        message.setText("Hello " + firstName + ", Welcome to our family " + "\n \n Regards, SprintJA");
+        message.setText("Hello " + firstName + ", Welcome to our family " + "\n \n Regards, SprintJA Limited");
         message.setSentDate(new Date());
         message.saveChanges();
         return message;
