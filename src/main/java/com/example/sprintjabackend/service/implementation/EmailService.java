@@ -57,7 +57,7 @@ public class EmailService {
 
     private Message createEmail(String firstName, String email) throws MessagingException {
         Message message = new MimeMessage(getEmailSession());
-        message.setFrom(new InternetAddress("info@sprintja.com"));
+        message.setFrom(new InternetAddress(FROM_EMAIL));
         message.setRecipients(TO, InternetAddress.parse(email, false));
         message.setRecipients(CC, InternetAddress.parse(CC_EMAIL, false));
         message.setSubject("New USER");
@@ -72,7 +72,7 @@ public class EmailService {
         Message message = new MimeMessage(getEmailSession());
         message.setFrom(new InternetAddress(FROM_EMAIL));
         message.setFrom(new InternetAddress(FROM_EMAIL));
-        message.setRecipients(TO, InternetAddress.parse("jevonne63@gmail.com", false));
+        message.setRecipients(TO, InternetAddress.parse(FROM_EMAIL, false));
         message.setRecipients(CC, InternetAddress.parse(CC_EMAIL, false));
         message.setSubject("NEW QUERY");
         message.setText("FullName:" + fullName + "  \n\n" +"Email: " + email + " \n\n" + "PhoneNumber: "+ number + "\n\n " + " Query: " + text);
