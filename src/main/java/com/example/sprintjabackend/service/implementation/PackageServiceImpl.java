@@ -76,9 +76,10 @@ public class PackageServiceImpl implements PackageService {
         return aPackage;
     }
 
+
     @Override
-    public List<Package> findByUserIdAndStatus(UUID uuid, String Status) {
-        return packageRepository.findByUserIdAndStatus(uuid, PackageStatus.NOT_SHIPPED.toString());
+    public List<Package> findAllByUserIdAndStatusOrderByCreatedAtDesc(UUID uuid, String Status) {
+        return packageRepository.findAllByUserIdAndStatusOrderByCreatedAtDesc(uuid, PackageStatus.NOT_SHIPPED.toString());
     }
 
 

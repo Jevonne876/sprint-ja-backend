@@ -38,7 +38,7 @@ public class PackageResource {
     @GetMapping(value = "get-all-packages/{userId}")
     public ResponseEntity<List<Package>> getAllPackagesByUserId(@PathVariable("userId") UUID userId) {
 
-        return new ResponseEntity<>(packageService.findByUserIdAndStatus(userId, PackageStatus.DEFAULT.toString()), OK);
+        return new ResponseEntity<>(packageService.findAllByUserIdAndStatusOrderByCreatedAtDesc(userId, PackageStatus.DEFAULT.toString()), OK);
 
     }
 
