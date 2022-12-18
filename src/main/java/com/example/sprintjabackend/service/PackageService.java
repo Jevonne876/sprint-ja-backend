@@ -31,5 +31,5 @@ public interface PackageService {
 
     Package  getFinalCount();
 
-    List<Package> findByUserIdAndStatus(UUID uuid,String Status);
+    List<Package> findAllByUserIdAndStatusOrderByCreatedAtDesc(UUID uuid,String Status);
 }
