@@ -3,13 +3,16 @@ package com.example.sprintjabackend.service.implementation;
 import com.example.sprintjabackend.enums.PackageStatus;
 import com.example.sprintjabackend.exception.domain.TrackingNumberException;
 import com.example.sprintjabackend.model.Package;
+import com.example.sprintjabackend.model.User;
 import com.example.sprintjabackend.repository.PackageRepository;
 import com.example.sprintjabackend.service.PackageService;
+import com.example.sprintjabackend.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import javax.mail.MessagingException;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -22,14 +25,18 @@ public class PackageServiceImpl implements PackageService {
     private final PackageRepository packageRepository;
     private final EmailService emailService;
 
+    private final UserService userService;
+
     @Autowired
-    public PackageServiceImpl(PackageRepository packageRepository, EmailService emailService) {
+    public PackageServiceImpl(PackageRepository packageRepository, EmailService emailService, UserService userService) {
         this.packageRepository = packageRepository;
         this.emailService = emailService;
+        this.userService = userService;
     }
 
     @Override
-    public Package addNewPackage(String trackingNumber, String courier, String description, double weight, double cost, UUID userId) throws TrackingNumberException {
+    public Package addNewPackage(String trackingNumber, String courier, String description, double weight, double cost, UUID userId) throws TrackingNumberException, MessagingException {
+        User user = userService.findUserByUserId(userId);
         validateTrackingNumber(trackingNumber);
         Package aPackage = new Package();
         aPackage.setTrackingNumber(trackingNumber);
@@ -40,8 +47,7 @@ public class PackageServiceImpl implements PackageService {
         aPackage.setUserId(userId);
         aPackage.setStatus(PackageStatus.NOT_SHIPPED.toString());
         packageRepository.save(aPackage);
-
-
+        emailService.sendNewPackageEmail(user.getFirstName(), user.getLastName(), user.getTrn(), trackingNumber, courier, description, weight, cost);
         return aPackage;
     }
 

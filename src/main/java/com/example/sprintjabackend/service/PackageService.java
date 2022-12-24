@@ -6,13 +6,14 @@ import com.example.sprintjabackend.model.Package;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import javax.mail.MessagingException;
 import java.util.List;
 import java.util.UUID;
 
 public interface PackageService {
 
     Package addNewPackage(String trackingNumber, String courier, String description,
-                          double weight, double cost, UUID userId) throws TrackingNumberException;
+                          double weight, double cost, UUID userId) throws TrackingNumberException, MessagingException;
 
     Page<Package> findAll(Pageable pageable);
 
