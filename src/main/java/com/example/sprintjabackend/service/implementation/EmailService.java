@@ -43,6 +43,14 @@ public class EmailService {
         smtpTransport.close();
     }
 
+    public void sendNewPackageEmail(String firstName, String lastName, Long trn, String trackingNumber, String courier, String description, double weight, double cost) throws MessagingException {
+        Message message = newPackageCreated(firstName, lastName, trn, trackingNumber, courier, description, weight, cost);
+        SMTPTransport smtpTransport = (SMTPTransport) getEmailSession().getTransport(SIMPLE_MAIL_TRANSFER_PROTOCOL);
+        smtpTransport.connect(GMAIL_SMTP_SERVER, USERNAME, PASSWORD);
+        smtpTransport.sendMessage(message, message.getAllRecipients());
+        smtpTransport.close();
+    }
+
     private Message createEmail(String firstName, String password, String email) throws MessagingException {
         Message message = new MimeMessage(getEmailSession());
         message.setFrom(new InternetAddress(FROM_EMAIL));
@@ -75,12 +83,27 @@ public class EmailService {
         message.setRecipients(TO, InternetAddress.parse(FROM_EMAIL, false));
         message.setRecipients(CC, InternetAddress.parse(CC_EMAIL, false));
         message.setSubject("NEW QUERY");
-        message.setText("FullName:" + fullName + "  \n\n" +"Email: " + email + " \n\n" + "PhoneNumber: "+ number + "\n\n " + " Query: " + text);
+        message.setText("FullName:" + fullName + "  \n\n" + "Email: " + email + " \n\n" + "PhoneNumber: " + number + "\n\n " + " Query: " + text);
         message.setSentDate(new Date());
         message.saveChanges();
         return message;
     }
 
+    private Message newPackageCreated(String firstName, String lastName, Long trn, String trackingNumber, String courier, String description, double weight, double cost) throws MessagingException {
+        Message message = new MimeMessage(getEmailSession());
+        message.setFrom(new InternetAddress(FROM_EMAIL));
+        message.setFrom(new InternetAddress(FROM_EMAIL));
+        message.setRecipients(TO, InternetAddress.parse(FROM_EMAIL, false));
+        message.setRecipients(CC, InternetAddress.parse(CC_EMAIL, false));
+        message.setSubject("NEW PRE-ALERT");
+        message.setText("A new Pre-Alert was created by: " + firstName + " " + lastName + ", TRN :" + trn + "\n\n" +
+                "Tracking Number :" + trackingNumber + "\n\n" + "Courier :" + courier + "\n\n" +
+                "Description :" + description + "\n\n" + "Weight :" + weight + "\n\n" + "Cost :" + cost);
+        message.setSentDate(new Date());
+        message.saveChanges();
+        return message;
+
+    }
 
     private Session getEmailSession() {
         Properties properties = System.getProperties();

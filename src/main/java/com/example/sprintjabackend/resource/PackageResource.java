@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import javax.mail.MessagingException;
 import java.util.List;
 import java.util.UUID;
 
@@ -56,7 +57,7 @@ public class PackageResource {
 //    }
 
     @PostMapping(value = "add-new-package")
-    public ResponseEntity<Package> addNewPackage(@RequestBody Package data) throws TrackingNumberException {
+    public ResponseEntity<Package> addNewPackage(@RequestBody Package data) throws TrackingNumberException, MessagingException {
         Package newPackage;
         newPackage = packageService.addNewPackage(data.getTrackingNumber(), data.getCourier(),
                 data.getDescription(), data.getWeight(), data.getCost(), data.getUserId());
