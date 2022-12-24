@@ -46,23 +46,13 @@ public class UserResource {
         return new ResponseEntity<>(newUser, OK);
     }
 
-    @PutMapping(value = "update-user")
-    public ResponseEntity<User> updatedUser(@RequestParam UUID userId,
-                                            @RequestParam Long trn,
-                                            @RequestParam String newFirstName,
-                                            @RequestParam String newLastName,
-                                            @RequestParam Date newDateOfBirth,
-                                            @RequestParam String newEmail,
-                                            @RequestParam String newPassword,
-                                            @RequestParam String newPhoneNumber,
-                                            @RequestParam String newAddress1,
-                                            @RequestParam String newAddress2,
-                                            @RequestParam String newPickUpBranch
+    @PutMapping(value = "update-user/{userId}")
+    public ResponseEntity<User> updatedUser(@PathVariable("userId") UUID userId, @RequestBody User user
     ) throws TrnExistException, EmailExistException, PhoneNumberException {
 
-        return new ResponseEntity<>(userService.updateUser(userId, trn, newFirstName,
-                newLastName, newDateOfBirth, newEmail, newPassword,
-                newPhoneNumber, newAddress1, newAddress2, newPickUpBranch), OK);
+        return new ResponseEntity<>(userService.updateUser(userId, user.getTrn(), user.getFirstName(),
+                user.getLastName(),
+                user.getPhoneNumber(), user.getParish(), user.getStreetAddress(), user.getPickUpBranch()), OK);
     }
 
     @PostMapping(value = "user-login")
@@ -74,7 +64,6 @@ public class UserResource {
         HttpHeaders httpHeaders = getJwtHeader(userPrincipal);
         return new ResponseEntity<>(loggedInUser, httpHeaders, OK);
     }
-
 
 
     @GetMapping("/reset-password/{email}")

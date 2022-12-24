@@ -17,8 +17,7 @@ public interface UserService {
                   String email, String password, String phoneNumber,
                   String address1, String address2, String pickUpBranch) throws EmailExistException, TrnExistException, PhoneNumberException, MessagingException;
 
-    User updateUser(UUID userId, Long trn, String firstName, String lastName, Date dateOfBirth,
-                    String email, String password, String phoneNumber,
+    User updateUser(UUID userId, Long trn, String firstName, String lastName,  String phoneNumber,
                     String address1, String address2, String pickUpBranch) throws EmailExistException, TrnExistException, PhoneNumberException;
 
     User findUserByUsername(String username);
