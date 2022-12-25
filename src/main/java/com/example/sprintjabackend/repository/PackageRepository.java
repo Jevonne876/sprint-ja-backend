@@ -19,7 +19,7 @@ public interface PackageRepository extends CrudRepository<Package, Long> {
 
     Package findByTrackingNumber(String trackingNumber);
 
-    Long countByStatus(String status);
+    Long countByUserIdAndStatus(UUID userId,String status);
 
     List<Package> findAllByUserIdAndStatusOrderByCreatedAtDesc(UUID uuid, String status);
 

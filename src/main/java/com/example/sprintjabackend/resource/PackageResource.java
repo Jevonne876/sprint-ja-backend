@@ -44,9 +44,9 @@ public class PackageResource {
     }
 
 
-    @GetMapping(value = "total-package")
-    public ResponseEntity<Package> getTotalPackageCount() {
-        return new ResponseEntity<>(packageService.getFinalCount(), OK);
+    @GetMapping(value = "total-package/{userId}")
+    public ResponseEntity<Package> getTotalPackageCount(@PathVariable("userId")UUID userId) {
+        return new ResponseEntity<>(packageService.getFinalCount(userId), OK);
     }
 
 //    @GetMapping(value = "get-all-packages/{userId}")

@@ -28,9 +28,9 @@ public interface PackageService {
 
 
 
-    Long  countByStatus(String status);
+    Long  countByUserIdAndStatus(UUID userId,String status);
 
-    Package  getFinalCount();
+    Package  getFinalCount(UUID userId);
 
     List<Package> findAllByUserIdAndStatusOrderByCreatedAtDesc(UUID uuid,String Status);
 }

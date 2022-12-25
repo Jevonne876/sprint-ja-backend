@@ -68,16 +68,16 @@ public class PackageServiceImpl implements PackageService {
     }
 
     @Override
-    public Long countByStatus(String status) {
-        return packageRepository.countByStatus(status.toString());
+    public Long countByUserIdAndStatus(UUID userId,String status) {
+        return packageRepository.countByUserIdAndStatus(userId,status);
     }
 
-    public Package getFinalCount() {
+    public Package getFinalCount(UUID userId) {
         Package aPackage = new Package();
 
-        aPackage.setTotalPackagesNotShipped(packageRepository.countByStatus(PackageStatus.NOT_SHIPPED.toString()));
-        aPackage.setTotalPackagesShipped(packageRepository.countByStatus(PackageStatus.SHIPPED.toString()));
-        aPackage.setTotalPackagesReadyForPickUp(packageRepository.countByStatus(PackageStatus.READY_FOR_PICKUP.toString()));
+        aPackage.setTotalPackagesNotShipped(packageRepository.countByUserIdAndStatus(userId,PackageStatus.NOT_SHIPPED.toString()));
+        aPackage.setTotalPackagesShipped(packageRepository.countByUserIdAndStatus(userId,PackageStatus.SHIPPED.toString()));
+        aPackage.setTotalPackagesReadyForPickUp(packageRepository.countByUserIdAndStatus(userId,PackageStatus.READY_FOR_PICKUP.toString()));
 
         return aPackage;
     }
