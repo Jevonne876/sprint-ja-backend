@@ -21,10 +21,10 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import static com.example.sprintjabackend.constant.Authorities.SUPER_ADMIN_AUTHORITIES;
+
 import static com.example.sprintjabackend.constant.SecurityConstant.ADMIN_URLS;
 import static com.example.sprintjabackend.constant.SecurityConstant.PUBLIC_URLS;
-import static com.example.sprintjabackend.enums.Role.ROLE_SUPER_ADMIN;
+import static com.example.sprintjabackend.enums.Role.SUPER_ADMIN;
 
 @Configuration
 @EnableWebSecurity
@@ -73,7 +73,7 @@ public class SecurityConfiguration {
                 .antMatchers(PUBLIC_URLS)
                 .permitAll()
                 .antMatchers(ADMIN_URLS)
-                .hasAuthority(ROLE_SUPER_ADMIN.getAuthorities().toString())
+                .hasRole(SUPER_ADMIN.toString())
                 .anyRequest().authenticated()
                 .and()
                 .exceptionHandling().accessDeniedHandler(jwtAccessDeniedFilter)

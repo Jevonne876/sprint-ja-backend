@@ -5,7 +5,7 @@ import static com.example.sprintjabackend.constant.Authorities.*;
 public enum Role {
 
     ROLE_USER(USER_AUTHORITIES),
-    ROLE_SUPER_ADMIN(SUPER_ADMIN_AUTHORITIES);
+    SUPER_ADMIN(SUPER_ADMIN_AUTHORITIES);
     private final String[] authorities;
 
     Role(String... userAuthorities) {
