@@ -10,6 +10,7 @@ import java.util.Date;
 import java.util.UUID;
 
 import static com.example.sprintjabackend.enums.Role.ROLE_USER;
+import static com.example.sprintjabackend.enums.Role.SUPER_ADMIN;
 
 @Getter
 @Setter
@@ -29,33 +30,33 @@ public class User implements Serializable {
     @Column(name = "user_id", nullable = false, updatable = false, unique = true)
     private UUID userId = UUID.randomUUID();
 
-    @Column(name = "trn", nullable = false, unique = true)
+    @Column(name = "trn", unique = true)
     Long trn;
 
-    @Column(name = "firstName", nullable = false)
+    @Column(name = "firstName")
     String firstName;
 
-    @Column(name = "lastName", nullable = false)
+    @Column(name = "lastName")
     String lastName;
 
-    @Column(name = "dateOfBirth", nullable = false)
+    @Column(name = "dateOfBirth", nullable = true, updatable = true)
     Date dateOfBirth;
 
     @Column(name = "username", nullable = false)
     String username;
-    @Column(name = "email", nullable = false)
+    @Column(name = "email")
     String email;
 
     @Column(name = "password", nullable = false)
     String password;
 
-    @Column(name = "phone", nullable = false, unique = true)
+    @Column(name = "phone", unique = true)
     String phoneNumber;
 
-    @Column(name = "streetAddress", nullable = false)
+    @Column(name = "streetAddress")
     String streetAddress;
 
-    @Column(name = "parish", nullable = false)
+    @Column(name = "parish")
     String parish;
 
     @Column(name = "pickupBranch")
@@ -116,6 +117,19 @@ public class User implements Serializable {
         this.pickUpBranch = pickUpBranch;
         this.role = ROLE_USER.name();
         this.authorities = ROLE_USER.getAuthorities();
+        this.isActive = true;
+        this.isNotLocked = true;
+        this.updatedAt = new Date();
+        this.createdAt = new Date();
+    }
+
+    public User(String username,String password){
+        this.userId = UUID.randomUUID();
+        this.username = username;
+        this.email =username;
+        this.password = password;
+        this.role = SUPER_ADMIN.name();
+        this.authorities = SUPER_ADMIN.getAuthorities();
         this.isActive = true;
         this.isNotLocked = true;
         this.updatedAt = new Date();

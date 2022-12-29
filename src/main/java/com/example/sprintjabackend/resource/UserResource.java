@@ -49,6 +49,13 @@ public class UserResource {
         return new ResponseEntity<>(newUser, OK);
     }
 
+    @PostMapping(value = "admin/register-new-admin")
+    public ResponseEntity<User> registerAdmin(@RequestBody User user) {
+        User newAdmin = new User();
+        newAdmin = userService.registerNewAdmin(user.getUsername(), user.getPassword());
+        return new ResponseEntity<>(newAdmin, OK);
+    }
+
     @PutMapping(value = "update-user")
     public ResponseEntity<User> updatedUser(@RequestParam UUID userId,
                                             @RequestParam Long trn,
@@ -78,6 +85,15 @@ public class UserResource {
         return new ResponseEntity<>(loggedInUser, httpHeaders, OK);
     }
 
+    @PostMapping(value = "admin/user-login")
+    public ResponseEntity<User> adminLogin(@RequestBody User user) {
+        authenticate(user.getUsername(), user.getPassword());
+        User loggedInAdmin = new User();
+        loggedInAdmin = userService.findUserByUsername(user.getUsername());
+        UserPrincipal userPrincipal = new UserPrincipal(loggedInAdmin);
+        HttpHeaders httpHeaders = getJwtHeader(userPrincipal);
+        return new ResponseEntity<>(loggedInAdmin, httpHeaders, OK);
+    }
 
 
     @GetMapping("/reset-password/{email}")
@@ -85,6 +101,7 @@ public class UserResource {
         userService.resetPassword(email);
         return response(OK, "" + email);
     }
+
 
     private void authenticate(String username, String password) {
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
