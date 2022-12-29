@@ -100,6 +100,12 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
+    public User registerNewAdmin(String username, String password) {
+        User newAdmin = new User(username, encoder.encode(password));
+        return this.userRepository.save(newAdmin);
+    }
+
+    @Override
     public User findUserByUsername(String username) {
         return userRepository.findUserByUsername(username);
     }
