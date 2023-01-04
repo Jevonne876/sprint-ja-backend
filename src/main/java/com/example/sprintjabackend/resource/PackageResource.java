@@ -1,18 +1,23 @@
 package com.example.sprintjabackend.resource;
 
 import com.example.sprintjabackend.enums.PackageStatus;
+import com.example.sprintjabackend.exception.domain.FileExtensionException;
 import com.example.sprintjabackend.exception.domain.TrackingNumberException;
 import com.example.sprintjabackend.model.Package;
 import com.example.sprintjabackend.service.PackageService;
+import org.apache.tomcat.util.http.fileupload.FileUpload;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.mail.MessagingException;
+import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
 
@@ -45,7 +50,7 @@ public class PackageResource {
 
 
     @GetMapping(value = "total-package/{userId}")
-    public ResponseEntity<Package> getTotalPackageCount(@PathVariable("userId")UUID userId) {
+    public ResponseEntity<Package> getTotalPackageCount(@PathVariable("userId") UUID userId) {
         return new ResponseEntity<>(packageService.getFinalCount(userId), OK);
     }
 
@@ -86,5 +91,13 @@ public class PackageResource {
 
 
     }
+
+    @PostMapping(value = "invoice-upload")
+    public ResponseEntity<?> uploadFile(@RequestParam("file") MultipartFile multipartFile) throws IOException, FileExtensionException {
+        String fileName = StringUtils.cleanPath(multipartFile.getOriginalFilename());
+        long size = multipartFile.getSize();
+        return new ResponseEntity<>(packageService.saveFile("123",fileName, multipartFile), OK);
+    }
+
 
 }

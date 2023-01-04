@@ -1,12 +1,15 @@
 package com.example.sprintjabackend.service;
 
 import com.example.sprintjabackend.enums.PackageStatus;
+import com.example.sprintjabackend.exception.domain.FileExtensionException;
 import com.example.sprintjabackend.exception.domain.TrackingNumberException;
 import com.example.sprintjabackend.model.Package;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.mail.MessagingException;
+import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
 
@@ -33,4 +36,6 @@ public interface PackageService {
     Package  getFinalCount(UUID userId);
 
     List<Package> findAllByUserIdAndStatusOrderByCreatedAtDesc(UUID uuid,String Status);
+
+    boolean saveFile(String packageTrackingNumber ,String fileName, MultipartFile multipartFile) throws IOException, FileExtensionException;
 }

@@ -1,6 +1,7 @@
 package com.example.sprintjabackend.service.implementation;
 
 import com.example.sprintjabackend.enums.PackageStatus;
+import com.example.sprintjabackend.exception.domain.FileExtensionException;
 import com.example.sprintjabackend.exception.domain.TrackingNumberException;
 import com.example.sprintjabackend.model.Package;
 import com.example.sprintjabackend.model.User;
@@ -11,13 +12,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.mail.MessagingException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
 import static com.example.sprintjabackend.constant.PackageConstant.TRACKING_NUMBER_FOUND;
+
 
 @Service
 public class PackageServiceImpl implements PackageService {
@@ -68,16 +77,16 @@ public class PackageServiceImpl implements PackageService {
     }
 
     @Override
-    public Long countByUserIdAndStatus(UUID userId,String status) {
-        return packageRepository.countByUserIdAndStatus(userId,status);
+    public Long countByUserIdAndStatus(UUID userId, String status) {
+        return packageRepository.countByUserIdAndStatus(userId, status);
     }
 
     public Package getFinalCount(UUID userId) {
         Package aPackage = new Package();
 
-        aPackage.setTotalPackagesNotShipped(packageRepository.countByUserIdAndStatus(userId,PackageStatus.NOT_SHIPPED.toString()));
-        aPackage.setTotalPackagesShipped(packageRepository.countByUserIdAndStatus(userId,PackageStatus.SHIPPED.toString()));
-        aPackage.setTotalPackagesReadyForPickUp(packageRepository.countByUserIdAndStatus(userId,PackageStatus.READY_FOR_PICKUP.toString()));
+        aPackage.setTotalPackagesNotShipped(packageRepository.countByUserIdAndStatus(userId, PackageStatus.NOT_SHIPPED.toString()));
+        aPackage.setTotalPackagesShipped(packageRepository.countByUserIdAndStatus(userId, PackageStatus.SHIPPED.toString()));
+        aPackage.setTotalPackagesReadyForPickUp(packageRepository.countByUserIdAndStatus(userId, PackageStatus.READY_FOR_PICKUP.toString()));
 
         return aPackage;
     }
@@ -87,7 +96,6 @@ public class PackageServiceImpl implements PackageService {
     public List<Package> findAllByUserIdAndStatusOrderByCreatedAtDesc(UUID uuid, String Status) {
         return packageRepository.findAllByUserIdAndStatusOrderByCreatedAtDesc(uuid, PackageStatus.NOT_SHIPPED.toString());
     }
-
 
     @Override
     public Package updatePackage(String oldTrackingNumber, String trackingNumber, String courier,
@@ -115,4 +123,32 @@ public class PackageServiceImpl implements PackageService {
             throw new TrackingNumberException(TRACKING_NUMBER_FOUND);
         }
     }
+
+    @Override
+    public boolean saveFile(String packingTrackingNumber, String fileName, MultipartFile multipartFile) throws IOException, FileExtensionException {
+        Path uploadDirectory = Paths.get("Files-Upload");
+
+
+        try (InputStream inputStream = multipartFile.getInputStream()) {
+            Path filePath = uploadDirectory.resolve(packingTrackingNumber + "-" + fileName);
+            Files.copy(inputStream, filePath, StandardCopyOption.REPLACE_EXISTING);
+        } catch (IOException e) {
+            throw new IOException("Error saving uploaded file: " + fileName + e);
+        }
+
+        return true;
+    }
+
+    private boolean validateFileExtension(String filename) throws FileExtensionException {
+        String fileExtension = com.google.common.io.Files.getFileExtension(filename);
+//        System.out.println("File extension is: " + fileExtension);
+        if (fileExtension == "jpeg" || fileExtension == "pdf" || fileExtension == "jpg" || fileExtension == "png") {
+            return true;
+        } else {
+            throw new FileExtensionException("File extension is not supported");
+
+        }
+    }
+
+
 }
