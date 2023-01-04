@@ -2,10 +2,13 @@ package com.example.sprintjabackend.service.implementation;
 
 import com.example.sprintjabackend.enums.Role;
 import com.example.sprintjabackend.exception.domain.UsernameExistException;
+import com.example.sprintjabackend.model.ApplicationInfo;
 import com.example.sprintjabackend.model.User;
 import com.example.sprintjabackend.repository.AdminRepository;
+import com.example.sprintjabackend.repository.PackageRepository;
 import com.example.sprintjabackend.repository.UserRepository;
 import com.example.sprintjabackend.service.AdminService;
+import com.example.sprintjabackend.service.PackageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -22,12 +25,19 @@ public class AdminServiceImpl implements AdminService {
     private final BCryptPasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
 
+    private final PackageService packageService;
+    private final PackageRepository packageRepository;
+
+
     @Autowired
     public AdminServiceImpl(AdminRepository adminRepository, BCryptPasswordEncoder passwordEncoder,
-                            UserRepository userRepository) {
+                            UserRepository userRepository, PackageService packageService,
+                            PackageRepository packageRepository) {
         this.adminRepository = adminRepository;
         this.passwordEncoder = passwordEncoder;
         this.userRepository = userRepository;
+        this.packageService = packageService;
+        this.packageRepository = packageRepository;
     }
 
     @Override
@@ -60,6 +70,35 @@ public class AdminServiceImpl implements AdminService {
     @Override
     public User findAdminByUserId(UUID userId) {
         return userRepository.findUserByUserId(userId);
+    }
+
+
+    @Override
+    public ApplicationInfo getData() {
+
+        ApplicationInfo applicationInfo = new ApplicationInfo();
+
+        applicationInfo.setTotalUsers(countByRoleUser());
+        applicationInfo.setTotalAdmins(countByRoleAdmin());
+
+        applicationInfo.setTotalPackagesNotShipped(packageService.packagesNotShipped());
+        applicationInfo.setTotalPackagesShipped(packageService.packagesShipped());
+        applicationInfo.setTotalPackagesReadyForPickup(packageService.packagesReadyForPickup());
+        applicationInfo.setTotalPackagesDelivered(packageService.packagesDelivered());
+        applicationInfo.setTotalPackages(packageService.packagesNotShipped() + packageService.packagesShipped() +
+                packageService.packagesReadyForPickup() + packageService.packagesDelivered());
+
+        return applicationInfo;
+    }
+
+    @Override
+    public long countByRoleUser() {
+        return adminRepository.countByRole(Role.ROLE_USER.toString());
+    }
+
+    @Override
+    public long countByRoleAdmin() {
+        return adminRepository.countByRole(Role.ROLE_SUPER_ADMIN.toString());
     }
 
 

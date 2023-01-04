@@ -32,5 +32,13 @@ public interface PackageService {
 
     Package  getFinalCount(UUID userId);
 
+    Long packagesNotShipped();
+
+    Long packagesShipped();
+
+    Long packagesReadyForPickup();
+
+    Long packagesDelivered();
+
     List<Package> findAllByUserIdAndStatusOrderByCreatedAtDesc(UUID uuid,String Status);
 }

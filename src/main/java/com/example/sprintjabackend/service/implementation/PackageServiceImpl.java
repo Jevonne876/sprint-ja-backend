@@ -68,16 +68,16 @@ public class PackageServiceImpl implements PackageService {
     }
 
     @Override
-    public Long countByUserIdAndStatus(UUID userId,String status) {
-        return packageRepository.countByUserIdAndStatus(userId,status);
+    public Long countByUserIdAndStatus(UUID userId, String status) {
+        return packageRepository.countByUserIdAndStatus(userId, status);
     }
 
     public Package getFinalCount(UUID userId) {
         Package aPackage = new Package();
 
-        aPackage.setTotalPackagesNotShipped(packageRepository.countByUserIdAndStatus(userId,PackageStatus.NOT_SHIPPED.toString()));
-        aPackage.setTotalPackagesShipped(packageRepository.countByUserIdAndStatus(userId,PackageStatus.SHIPPED.toString()));
-        aPackage.setTotalPackagesReadyForPickUp(packageRepository.countByUserIdAndStatus(userId,PackageStatus.READY_FOR_PICKUP.toString()));
+        aPackage.setTotalPackagesNotShipped(packageRepository.countByUserIdAndStatus(userId, PackageStatus.NOT_SHIPPED.toString()));
+        aPackage.setTotalPackagesShipped(packageRepository.countByUserIdAndStatus(userId, PackageStatus.SHIPPED.toString()));
+        aPackage.setTotalPackagesReadyForPickUp(packageRepository.countByUserIdAndStatus(userId, PackageStatus.READY_FOR_PICKUP.toString()));
 
         return aPackage;
     }
@@ -106,6 +106,25 @@ public class PackageServiceImpl implements PackageService {
         return packageRepository.save(getPackageToBeUpdated);
     }
 
+    @Override
+    public Long packagesNotShipped() {
+        return packageRepository.countByStatus(PackageStatus.NOT_SHIPPED.toString());
+    }
+
+    @Override
+    public Long packagesShipped() {
+        return packageRepository.countByStatus(PackageStatus.SHIPPED.toString());
+    }
+
+    @Override
+    public Long packagesReadyForPickup() {
+        return packageRepository.countByStatus(PackageStatus.READY_FOR_PICKUP.toString());
+    }
+
+    @Override
+    public Long packagesDelivered() {
+        return packageRepository.countByStatus(PackageStatus.DELIVERED.toString());
+    }
 
     private void validateTrackingNumber(String trackingNumber) throws TrackingNumberException {
 

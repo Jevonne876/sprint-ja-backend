@@ -27,4 +27,6 @@ public interface AdminRepository extends CrudRepository<User, Long> {
 
     User findUserByUserId(UUID userId);
 
+    long countByRole(String role);
+
 }

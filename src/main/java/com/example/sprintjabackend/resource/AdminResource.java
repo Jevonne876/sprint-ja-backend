@@ -1,6 +1,7 @@
 package com.example.sprintjabackend.resource;
 
 import com.example.sprintjabackend.exception.domain.UsernameExistException;
+import com.example.sprintjabackend.model.ApplicationInfo;
 import com.example.sprintjabackend.model.HttpResponse;
 import com.example.sprintjabackend.model.User;
 import com.example.sprintjabackend.model.UserPrincipal;
@@ -12,10 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import static com.example.sprintjabackend.constant.SecurityConstant.JWT_TOKEN_HEADER;
 import static org.springframework.http.HttpStatus.OK;
@@ -50,6 +48,11 @@ public class AdminResource {
         UserPrincipal userPrincipal = new UserPrincipal(loggedInUser);
         HttpHeaders httpHeaders = getJwtHeader(userPrincipal);
         return new ResponseEntity<>(loggedInUser, httpHeaders, OK);
+    }
+
+    @GetMapping(value = "/admin/get-application-data")
+    public ResponseEntity<ApplicationInfo> getTotalData() {
+        return new ResponseEntity<>(adminService.getData(), OK);
     }
 
 
