@@ -1,5 +1,6 @@
 package com.example.sprintjabackend.service.implementation;
 
+import com.example.sprintjabackend.enums.Role;
 import com.example.sprintjabackend.exception.domain.EmailExistException;
 import com.example.sprintjabackend.exception.domain.EmailNotFoundException;
 import com.example.sprintjabackend.exception.domain.PhoneNumberException;
@@ -11,6 +12,8 @@ import com.example.sprintjabackend.service.UserService;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -146,6 +149,11 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         userRepository.save(user);
         this.emailService.sendNewPasswordEmail(user.getFirstName(), password, user.getEmail());
 
+    }
+
+    @Override
+    public Page<User> findAllByRole(Pageable pageable) {
+        return userRepository.findAllByRole(pageable, Role.ROLE_USER.toString());
     }
 
     private void validateTrnAndEmail(long newTrn, String newEmail, String newPhoneNumber) throws TrnExistException, EmailExistException, PhoneNumberException {

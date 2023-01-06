@@ -35,25 +35,33 @@ public class PackageServiceImpl implements PackageService {
     }
 
     @Override
-    public Package addNewPackage(String trackingNumber, String courier, String description, double weight, double cost, UUID userId) throws TrackingNumberException, MessagingException {
-        User user = userService.findUserByUserId(userId);
-        validateTrackingNumber(trackingNumber);
-        Package aPackage = new Package();
-        aPackage.setTrackingNumber(trackingNumber);
-        aPackage.setCourier(courier);
-        aPackage.setDescription(description);
-        aPackage.setWeight(weight);
-        aPackage.setCost(cost);
-        aPackage.setUserId(userId);
-        aPackage.setStatus(PackageStatus.NOT_SHIPPED.toString());
-        packageRepository.save(aPackage);
-        emailService.sendNewPackageEmail(user.getFirstName(), user.getLastName(), user.getTrn(), trackingNumber, courier, description, weight, cost);
-        return aPackage;
+    public Page<Package> findAll(Pageable pageable) {
+
+        return packageRepository.findAll(pageable);
     }
 
     @Override
-    public Page<Package> findAll(Pageable pageable) {
-        return packageRepository.findAll(pageable);
+    public Page<Package> findAllNotShipped(Pageable pageable) {
+
+        return packageRepository.findAllByStatus(pageable,PackageStatus.NOT_SHIPPED.toString());
+    }
+
+    @Override
+    public Page<Package> findAllShipped(Pageable pageable) {
+
+        return packageRepository.findAllByStatus(pageable,PackageStatus.SHIPPED.toString());
+    }
+
+    @Override
+    public Page<Package> findAllReadyForPickup(Pageable pageable) {
+
+        return packageRepository.findAllByStatus(pageable,PackageStatus.READY_FOR_PICKUP.name().toString());
+    }
+
+    @Override
+    public Page<Package> findAllDelivered(Pageable pageable) {
+
+        return packageRepository.findAllByStatus(pageable,PackageStatus.DELIVERED.name().toString());
     }
 
     @Override
@@ -88,6 +96,22 @@ public class PackageServiceImpl implements PackageService {
         return packageRepository.findAllByUserIdAndStatusOrderByCreatedAtDesc(uuid, PackageStatus.NOT_SHIPPED.toString());
     }
 
+    @Override
+    public Package addNewPackage(String trackingNumber, String courier, String description, double weight, double cost, UUID userId) throws TrackingNumberException, MessagingException {
+        User user = userService.findUserByUserId(userId);
+        validateTrackingNumber(trackingNumber);
+        Package aPackage = new Package();
+        aPackage.setTrackingNumber(trackingNumber);
+        aPackage.setCourier(courier);
+        aPackage.setDescription(description);
+        aPackage.setWeight(weight);
+        aPackage.setCost(cost);
+        aPackage.setUserId(userId);
+        aPackage.setStatus(PackageStatus.NOT_SHIPPED.toString());
+        packageRepository.save(aPackage);
+        emailService.sendNewPackageEmail(user.getFirstName(), user.getLastName(), user.getTrn(), trackingNumber, courier, description, weight, cost);
+        return aPackage;
+    }
 
     @Override
     public Package updatePackage(String oldTrackingNumber, String trackingNumber, String courier,

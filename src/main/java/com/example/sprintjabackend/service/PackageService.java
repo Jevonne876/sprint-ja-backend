@@ -41,4 +41,13 @@ public interface PackageService {
     Long packagesDelivered();
 
     List<Package> findAllByUserIdAndStatusOrderByCreatedAtDesc(UUID uuid,String Status);
+
+    Page<Package> findAllNotShipped(Pageable pageable);
+
+    Page<Package> findAllShipped(Pageable pageable);
+
+    Page<Package> findAllReadyForPickup(Pageable pageable);
+
+    Page<Package> findAllDelivered(Pageable pageable);
+
 }

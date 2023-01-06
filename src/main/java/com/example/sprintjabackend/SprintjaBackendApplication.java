@@ -1,5 +1,9 @@
 package com.example.sprintjabackend;
 
+import com.example.sprintjabackend.model.User;
+import com.example.sprintjabackend.repository.UserRepository;
+import com.github.javafaker.Faker;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
@@ -7,14 +11,27 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import javax.persistence.Column;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+
+import static com.example.sprintjabackend.enums.Role.ROLE_USER;
 
 @SpringBootApplication
 public class SprintjaBackendApplication {
 
+    private final UserRepository userRepository ;
+
+    @Autowired
+    public SprintjaBackendApplication(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
+
     public static void main(String[] args) {
         SpringApplication.run(SprintjaBackendApplication.class, args);
+
     }
 
     @Bean
@@ -37,5 +54,23 @@ public class SprintjaBackendApplication {
         source.registerCorsConfiguration("/**", configuration);
         return source;
     }
+
+//    @Bean
+//    public void fakeUsers(){
+//        Faker faker = new Faker();
+//        for (int i =0; i<=100; i ++){
+//            User user = new User();
+//            user.setTrn(faker.number().randomNumber());
+//            user.setFirstName(faker.name().firstName());
+//            user.setLastName(faker.name().lastName());
+//            user.setDateOfBirth(faker.date().birthday());
+//            user.setUsername(faker.name().username());
+//            user.setEmail(faker.name().username());
+//            user.setEmail(faker.phoneNumber().cellPhone());
+//            user.setEmail(faker.address().streetAddress());
+//            user.setEmail(faker.address().state());
+//            userRepository.save(user);
+//        }
+//    }
 
 }

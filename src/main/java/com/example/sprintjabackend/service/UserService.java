@@ -5,6 +5,8 @@ import com.example.sprintjabackend.exception.domain.EmailNotFoundException;
 import com.example.sprintjabackend.exception.domain.PhoneNumberException;
 import com.example.sprintjabackend.exception.domain.TrnExistException;
 import com.example.sprintjabackend.model.User;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import javax.mail.MessagingException;
 import java.util.Date;
@@ -32,4 +34,6 @@ public interface UserService {
     User findUserByUserId(UUID userId);
 
     void resetPassword(String email) throws EmailNotFoundException, MessagingException;
+
+    Page<User> findAllByRole(Pageable pageable);
 }
