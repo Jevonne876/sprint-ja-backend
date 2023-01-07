@@ -1,5 +1,8 @@
 package com.example.sprintjabackend.resource;
 
+import com.example.sprintjabackend.exception.domain.EmailExistException;
+import com.example.sprintjabackend.exception.domain.PhoneNumberException;
+import com.example.sprintjabackend.exception.domain.TrnExistException;
 import com.example.sprintjabackend.exception.domain.UsernameExistException;
 import com.example.sprintjabackend.model.ApplicationInfo;
 import com.example.sprintjabackend.model.HttpResponse;
@@ -22,6 +25,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
 
+import javax.mail.MessagingException;
 import java.util.Optional;
 
 import static com.example.sprintjabackend.constant.SecurityConstant.JWT_TOKEN_HEADER;
@@ -65,6 +69,20 @@ public class AdminResource {
         UserPrincipal userPrincipal = new UserPrincipal(loggedInUser);
         HttpHeaders httpHeaders = getJwtHeader(userPrincipal);
         return new ResponseEntity<>(loggedInUser, httpHeaders, OK);
+    }
+
+    @PostMapping(value = "/admin/register-new-user")
+    public ResponseEntity<User> registerNewUser(@RequestBody User user) throws PhoneNumberException, EmailExistException, MessagingException, TrnExistException {
+        User newUser = new User();
+
+
+        newUser = userService.addNewUserFromAdmin(user.getTrn(),
+                user.getFirstName(), user.getLastName(), user.getDateOfBirth(), user.getEmail(),
+                user.getPhoneNumber(), user.getStreetAddress(), user.getParish(),
+                user.getPickUpBranch());
+
+        return new ResponseEntity<>(newUser, OK);
+
     }
 
     @GetMapping(value = "/admin/get-application-data")

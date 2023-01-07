@@ -10,6 +10,7 @@ import org.springframework.data.domain.Pageable;
 
 import javax.mail.MessagingException;
 import java.util.Date;
+import java.util.Optional;
 import java.util.UUID;
 
 
@@ -36,4 +37,10 @@ public interface UserService {
     void resetPassword(String email) throws EmailNotFoundException, MessagingException;
 
     Page<User> findAllByRole(Pageable pageable);
+
+    User addNewUserFromAdmin(Long trn,
+                             String firstName, String lastName,
+                             Date dateOfBirth, String email, String phoneNumber,
+                             String streetAddress, String parish,
+                             String pickUpBranch) throws PhoneNumberException, EmailExistException, TrnExistException, MessagingException;
 }

@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 import javax.mail.MessagingException;
 import javax.transaction.Transactional;
 import java.util.Date;
+import java.util.Optional;
 import java.util.UUID;
 
 import static com.example.sprintjabackend.constant.UserImplementationConstant.*;
@@ -67,6 +68,30 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         this.userRepository.save(newUser);
         this.emailService.newUserEmail(firstName, email);
         return newUser;
+    }
+
+    @Override
+    public User addNewUserFromAdmin( Long trn,
+                                    String firstName, String lastName,
+                                    Date dateOfBirth, String email, String phoneNumber,
+                                    String streetAddress, String parish,
+                                    String pickUpBranch) throws PhoneNumberException, EmailExistException, TrnExistException, MessagingException {
+        User newUser = new User();
+        String password = generatePassword();
+        newUser.setTrn(0L);
+        newUser.setFirstName(firstName);
+        newUser.setLastName(lastName);
+        newUser.setDateOfBirth(new Date());
+        newUser.setEmail(email);
+        newUser.setUsername(email);
+        newUser.setPassword(encoder.encode(password));
+        newUser.setPhoneNumber(phoneNumber);
+        newUser.setStreetAddress("");
+        newUser.setParish("");
+        newUser.setPickUpBranch("");
+        this.userRepository.save(newUser);
+        this.emailService.sendNewAccountPassword(firstName,lastName,password,email);
+        return null;
     }
 
     @Override
