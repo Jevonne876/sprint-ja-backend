@@ -4,6 +4,7 @@ import com.example.sprintjabackend.enums.PackageStatus;
 import com.example.sprintjabackend.exception.domain.FileExtensionException;
 import com.example.sprintjabackend.exception.domain.TrackingNumberException;
 import com.example.sprintjabackend.model.Package;
+import com.example.sprintjabackend.model.UserPackageInfo;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -25,7 +26,6 @@ public interface PackageService {
 
     Package findByTrackingNumber(String trackingNumber);
 
-
     Package updatePackage(String oldPackageNumber, String trackingNumber, String courier,
                           String description, double weight,
                           double cost, UUID userId) throws TrackingNumberException;
@@ -33,11 +33,19 @@ public interface PackageService {
 
     Long countByUserIdAndStatus(UUID userId, String status);
 
-    Package getFinalCount(UUID userId);
+    UserPackageInfo getFinalCount(UUID userId);
 
     List<Package> findAllByUserIdAndStatusOrderByCreatedAtDesc(UUID uuid, String Status);
 
 
     String fileUpload(String packageTrackingNumber, MultipartFile multipartFile) throws IOException;
+
+    Long userPackagesNotShipped(UUID uuid);
+
+    Long userPackagesShipped(UUID uuid);
+
+    Long userPackagesReadyForPickup(UUID uuid);
+
+    Long userPackagesDelivered(UUID uuid);
 
 }

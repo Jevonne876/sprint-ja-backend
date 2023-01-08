@@ -4,6 +4,7 @@ import com.example.sprintjabackend.enums.PackageStatus;
 import com.example.sprintjabackend.exception.domain.FileExtensionException;
 import com.example.sprintjabackend.exception.domain.TrackingNumberException;
 import com.example.sprintjabackend.model.Package;
+import com.example.sprintjabackend.model.UserPackageInfo;
 import com.example.sprintjabackend.service.PackageService;
 import org.apache.tomcat.util.http.fileupload.FileUpload;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,7 +45,6 @@ public class PackageResource {
         this.packageService = packageService;
     }
 
-
     @GetMapping(value = "get-all-packages")
     public ResponseEntity<Page<Package>> getAll() {
         Pageable pageable = PageRequest.of(0, 10);
@@ -53,23 +53,14 @@ public class PackageResource {
 
     @GetMapping(value = "get-all-packages/{userId}")
     public ResponseEntity<List<Package>> getAllPackagesByUserId(@PathVariable("userId") UUID userId) {
-
         return new ResponseEntity<>(packageService.findAllByUserIdAndStatusOrderByCreatedAtDesc(userId, PackageStatus.DEFAULT.toString()), OK);
-
     }
 
 
-    @GetMapping(value = "total-package/{userId}")
-    public ResponseEntity<Package> getTotalPackageCount(@PathVariable("userId") UUID userId) {
+    @GetMapping(value = "total-packages/{userId}")
+    public ResponseEntity<UserPackageInfo> getTotalPackageCount(@PathVariable("userId") UUID userId) {
         return new ResponseEntity<>(packageService.getFinalCount(userId), OK);
     }
-
-//    @GetMapping(value = "get-all-packages/{userId}")
-//    public ResponseEntity<Page<Package>> getAllPackagesByUserId(@PathVariable("userId") UUID userId) {
-//        Pageable pageable = PageRequest.of(0, 10);
-//        return new ResponseEntity<>(packageService.findAllPackageByUserId(userId, pageable), OK);
-//
-//    }
 
     @PostMapping(value = "add-new-package")
     public ResponseEntity<Package> addNewPackage(@RequestParam String trackingNumber,

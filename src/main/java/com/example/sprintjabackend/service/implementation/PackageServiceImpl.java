@@ -5,6 +5,7 @@ import com.example.sprintjabackend.exception.domain.FileExtensionException;
 import com.example.sprintjabackend.exception.domain.TrackingNumberException;
 import com.example.sprintjabackend.model.Package;
 import com.example.sprintjabackend.model.User;
+import com.example.sprintjabackend.model.UserPackageInfo;
 import com.example.sprintjabackend.repository.PackageRepository;
 import com.example.sprintjabackend.service.PackageService;
 import com.example.sprintjabackend.service.UserService;
@@ -56,7 +57,7 @@ public class PackageServiceImpl implements PackageService {
         User user = userService.findUserByUserId(userId);
         //saves the file first in order to get filename
         validateTrackingNumber(trackingNumber);
-      String filename=  fileUpload(trackingNumber,file);
+        String filename = fileUpload(trackingNumber, file);
         Package aPackage = new Package();
         aPackage.setTrackingNumber(trackingNumber);
         aPackage.setCourier(courier);
@@ -92,14 +93,17 @@ public class PackageServiceImpl implements PackageService {
         return packageRepository.countByUserIdAndStatus(userId, status);
     }
 
-    public Package getFinalCount(UUID userId) {
-        Package aPackage = new Package();
+    public UserPackageInfo getFinalCount(UUID userId) {
 
-        aPackage.setTotalPackagesNotShipped(packageRepository.countByUserIdAndStatus(userId, PackageStatus.NOT_SHIPPED.toString()));
-        aPackage.setTotalPackagesShipped(packageRepository.countByUserIdAndStatus(userId, PackageStatus.SHIPPED.toString()));
-        aPackage.setTotalPackagesReadyForPickUp(packageRepository.countByUserIdAndStatus(userId, PackageStatus.READY_FOR_PICKUP.toString()));
+        UserPackageInfo userPackageInfo = new UserPackageInfo();
 
-        return aPackage;
+        userPackageInfo.setTotalPackagesNotShipped(userPackagesNotShipped(userId));
+        userPackageInfo.setTotalPackagesShipped(userPackagesShipped(userId));
+        userPackageInfo.setTotalPackagesReadyForPickup(userPackagesReadyForPickup(userId));
+        userPackageInfo.setTotalPackagesDelivered(userPackagesDelivered(userId));
+
+        return  userPackageInfo;
+
     }
 
 
@@ -145,16 +149,24 @@ public class PackageServiceImpl implements PackageService {
         return newFileName;
     }
 
+    @Override
+    public Long userPackagesNotShipped(UUID userId) {
+        return packageRepository.countByUserIdAndStatus(userId, PackageStatus.NOT_SHIPPED.toString());
+    }
 
-    private boolean validateFileExtension(String filename) throws FileExtensionException {
-        String fileExtension = com.google.common.io.Files.getFileExtension(filename);
-//        System.out.println("File extension is: " + fileExtension);
-        if (fileExtension == "jpeg" || fileExtension == "pdf" || fileExtension == "jpg" || fileExtension == "png") {
-            return true;
-        } else {
-            throw new FileExtensionException("File extension is not supported");
+    @Override
+    public Long userPackagesShipped(UUID userId) {
+        return packageRepository.countByUserIdAndStatus(userId, PackageStatus.SHIPPED.toString());
+    }
 
-        }
+    @Override
+    public Long userPackagesReadyForPickup(UUID userId) {
+        return packageRepository.countByUserIdAndStatus(userId, PackageStatus.READY_FOR_PICKUP.toString());
+    }
+
+    @Override
+    public Long userPackagesDelivered(UUID userId) {
+        return packageRepository.countByUserIdAndStatus(userId, PackageStatus.DELIVERED.toString());
     }
 
 
