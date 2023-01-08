@@ -1,11 +1,8 @@
 package com.example.sprintjabackend.service;
 
-import com.example.sprintjabackend.enums.PackageStatus;
-import com.example.sprintjabackend.exception.domain.FileExtensionException;
 import com.example.sprintjabackend.exception.domain.TrackingNumberException;
 import com.example.sprintjabackend.model.Package;
 import com.example.sprintjabackend.model.UserPackageInfo;
-import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;

@@ -1,12 +1,10 @@
 package com.example.sprintjabackend.resource;
 
-import com.example.sprintjabackend.enums.PackageStatus;
-import com.example.sprintjabackend.exception.domain.FileExtensionException;
+
 import com.example.sprintjabackend.exception.domain.TrackingNumberException;
 import com.example.sprintjabackend.model.Package;
 import com.example.sprintjabackend.model.UserPackageInfo;
 import com.example.sprintjabackend.service.PackageService;
-import org.apache.tomcat.util.http.fileupload.FileUpload;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -17,7 +15,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -26,7 +23,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -125,7 +121,7 @@ public class PackageResource {
     }
 
     @PostMapping(value = "invoice-upload")
-    public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile multipartFile) throws IOException, FileExtensionException {
+    public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile multipartFile) throws IOException {
 
         return new ResponseEntity<>(packageService.fileUpload("123", multipartFile), OK);
     }

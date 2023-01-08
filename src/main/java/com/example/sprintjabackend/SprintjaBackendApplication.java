@@ -55,22 +55,5 @@ public class SprintjaBackendApplication {
         return source;
     }
 
-//    @Bean
-//    public void fakeUsers(){
-//        Faker faker = new Faker();
-//        for (int i =0; i<=100; i ++){
-//            User user = new User();
-//            user.setTrn(faker.number().randomNumber());
-//            user.setFirstName(faker.name().firstName());
-//            user.setLastName(faker.name().lastName());
-//            user.setDateOfBirth(faker.date().birthday());
-//            user.setUsername(faker.name().username());
-//            user.setEmail(faker.name().username());
-//            user.setEmail(faker.phoneNumber().cellPhone());
-//            user.setEmail(faker.address().streetAddress());
-//            user.setEmail(faker.address().state());
-//            userRepository.save(user);
-//        }
-//    }
 
 }
