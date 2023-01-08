@@ -7,9 +7,13 @@ import com.example.sprintjabackend.model.Package;
 import com.example.sprintjabackend.service.PackageService;
 import org.apache.tomcat.util.http.fileupload.FileUpload;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
@@ -17,10 +21,16 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.mail.MessagingException;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.UUID;
 
+import static com.example.sprintjabackend.service.implementation.PackageServiceImpl.DIRECTORY;
+import static java.nio.file.Paths.get;
+import static org.springframework.http.HttpHeaders.CONTENT_DISPOSITION;
 import static org.springframework.http.HttpStatus.OK;
 
 @Controller
@@ -62,10 +72,17 @@ public class PackageResource {
 //    }
 
     @PostMapping(value = "add-new-package")
-    public ResponseEntity<Package> addNewPackage(@RequestBody Package data) throws TrackingNumberException, MessagingException {
+    public ResponseEntity<Package> addNewPackage(@RequestParam String trackingNumber,
+                                                 @RequestParam String courier,
+                                                 @RequestParam String description,
+                                                 @RequestParam double weight,
+                                                 @RequestParam double cost,
+                                                 @RequestParam UUID userId,
+                                                 @RequestParam("file") MultipartFile multipartFile
+                                                 ) throws TrackingNumberException, MessagingException, IOException {
         Package newPackage;
-        newPackage = packageService.addNewPackage(data.getTrackingNumber(), data.getCourier(),
-                data.getDescription(), data.getWeight(), data.getCost(), data.getUserId());
+
+        newPackage = packageService.addNewPackage(trackingNumber, courier, description, weight, cost,userId, multipartFile);
 
         return new ResponseEntity<>(newPackage, OK);
     }
@@ -93,10 +110,23 @@ public class PackageResource {
     }
 
     @PostMapping(value = "invoice-upload")
-    public ResponseEntity<?> uploadFile(@RequestParam("file") MultipartFile multipartFile) throws IOException, FileExtensionException {
-        String fileName = StringUtils.cleanPath(multipartFile.getOriginalFilename());
-        long size = multipartFile.getSize();
-        return new ResponseEntity<>(packageService.saveFile("123",fileName, multipartFile), OK);
+    public ResponseEntity<String> uploadFile( @RequestParam("file") MultipartFile multipartFile) throws IOException, FileExtensionException {
+
+        return new ResponseEntity<>(packageService.fileUpload("123", multipartFile), OK);
+    }
+
+    @GetMapping("invoice-download/{filename}")
+    public ResponseEntity<Resource> downloadFiles(@PathVariable("filename") String filename) throws IOException {
+        Path filePath = get(DIRECTORY).toAbsolutePath().normalize().resolve(filename);
+        if (!Files.exists(filePath)) {
+            throw new FileNotFoundException(filename + " was not found on the server");
+        }
+        Resource resource = new UrlResource(filePath.toUri());
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.add("File-Name", filename);
+        httpHeaders.add(CONTENT_DISPOSITION, "attachment;File-Name=" + resource.getFilename());
+        return ResponseEntity.ok().contentType(MediaType.parseMediaType(Files.probeContentType(filePath)))
+                .headers(httpHeaders).body(resource);
     }
 
 

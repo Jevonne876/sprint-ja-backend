@@ -4,6 +4,7 @@ import com.example.sprintjabackend.enums.PackageStatus;
 import com.example.sprintjabackend.exception.domain.FileExtensionException;
 import com.example.sprintjabackend.exception.domain.TrackingNumberException;
 import com.example.sprintjabackend.model.Package;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
@@ -16,7 +17,7 @@ import java.util.UUID;
 public interface PackageService {
 
     Package addNewPackage(String trackingNumber, String courier, String description,
-                          double weight, double cost, UUID userId) throws TrackingNumberException, MessagingException;
+                          double weight, double cost, UUID userId, MultipartFile file) throws TrackingNumberException, MessagingException, IOException;
 
     Page<Package> findAll(Pageable pageable);
 
@@ -30,12 +31,13 @@ public interface PackageService {
                           double cost, UUID userId) throws TrackingNumberException;
 
 
+    Long countByUserIdAndStatus(UUID userId, String status);
 
-    Long  countByUserIdAndStatus(UUID userId,String status);
+    Package getFinalCount(UUID userId);
 
-    Package  getFinalCount(UUID userId);
+    List<Package> findAllByUserIdAndStatusOrderByCreatedAtDesc(UUID uuid, String Status);
 
-    List<Package> findAllByUserIdAndStatusOrderByCreatedAtDesc(UUID uuid,String Status);
 
-    boolean saveFile(String packageTrackingNumber ,String fileName, MultipartFile multipartFile) throws IOException, FileExtensionException;
+    String fileUpload(String packageTrackingNumber, MultipartFile multipartFile) throws IOException;
+
 }

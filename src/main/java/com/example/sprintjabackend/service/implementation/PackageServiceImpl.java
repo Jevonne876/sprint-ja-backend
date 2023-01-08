@@ -9,9 +9,11 @@ import com.example.sprintjabackend.repository.PackageRepository;
 import com.example.sprintjabackend.service.PackageService;
 import com.example.sprintjabackend.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.mail.MessagingException;
@@ -26,6 +28,9 @@ import java.util.List;
 import java.util.UUID;
 
 import static com.example.sprintjabackend.constant.PackageConstant.TRACKING_NUMBER_FOUND;
+import static java.nio.file.Paths.get;
+import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
+import static java.nio.file.Files.copy;
 
 
 @Service
@@ -36,6 +41,8 @@ public class PackageServiceImpl implements PackageService {
 
     private final UserService userService;
 
+    public static final String DIRECTORY = "invoices";
+
     @Autowired
     public PackageServiceImpl(PackageRepository packageRepository, EmailService emailService, UserService userService) {
         this.packageRepository = packageRepository;
@@ -44,9 +51,12 @@ public class PackageServiceImpl implements PackageService {
     }
 
     @Override
-    public Package addNewPackage(String trackingNumber, String courier, String description, double weight, double cost, UUID userId) throws TrackingNumberException, MessagingException {
+    public Package addNewPackage(String trackingNumber, String courier, String description, double weight, double cost, UUID userId, MultipartFile file) throws TrackingNumberException, MessagingException, IOException {
+
         User user = userService.findUserByUserId(userId);
+        //saves the file first in order to get filename
         validateTrackingNumber(trackingNumber);
+      String filename=  fileUpload(trackingNumber,file);
         Package aPackage = new Package();
         aPackage.setTrackingNumber(trackingNumber);
         aPackage.setCourier(courier);
@@ -54,6 +64,7 @@ public class PackageServiceImpl implements PackageService {
         aPackage.setWeight(weight);
         aPackage.setCost(cost);
         aPackage.setUserId(userId);
+        aPackage.setInvoice(filename);
         aPackage.setStatus(PackageStatus.NOT_SHIPPED.toString());
         packageRepository.save(aPackage);
         emailService.sendNewPackageEmail(user.getFirstName(), user.getLastName(), user.getTrn(), trackingNumber, courier, description, weight, cost);
@@ -125,19 +136,15 @@ public class PackageServiceImpl implements PackageService {
     }
 
     @Override
-    public boolean saveFile(String packingTrackingNumber, String fileName, MultipartFile multipartFile) throws IOException, FileExtensionException {
-        Path uploadDirectory = Paths.get("Files-Upload");
+    public String fileUpload(String packageTrackingNumber, MultipartFile multipartFile) throws IOException {
 
-
-        try (InputStream inputStream = multipartFile.getInputStream()) {
-            Path filePath = uploadDirectory.resolve(packingTrackingNumber + "-" + fileName);
-            Files.copy(inputStream, filePath, StandardCopyOption.REPLACE_EXISTING);
-        } catch (IOException e) {
-            throw new IOException("Error saving uploaded file: " + fileName + e);
-        }
-
-        return true;
+        String newFileName;
+        newFileName = packageTrackingNumber + "-" + StringUtils.cleanPath(multipartFile.getOriginalFilename());
+        Path fileStorage = get(DIRECTORY, newFileName).toAbsolutePath().normalize();
+        copy(multipartFile.getInputStream(), fileStorage, REPLACE_EXISTING);
+        return newFileName;
     }
+
 
     private boolean validateFileExtension(String filename) throws FileExtensionException {
         String fileExtension = com.google.common.io.Files.getFileExtension(filename);
