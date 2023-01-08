@@ -6,6 +6,7 @@ import com.example.sprintjabackend.exception.domain.TrackingNumberException;
 import com.example.sprintjabackend.model.Package;
 import com.example.sprintjabackend.model.UserPackageInfo;
 import com.example.sprintjabackend.service.PackageService;
+import org.apache.tomcat.util.http.fileupload.FileUpload;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -16,6 +17,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -44,17 +46,16 @@ public class PackageResource {
         this.packageService = packageService;
     }
 
-
     @GetMapping(value = "get-all-packages")
     public ResponseEntity<Page<Package>> getAll() {
         Pageable pageable = PageRequest.of(0, 10);
         return new ResponseEntity<>(packageService.findAll(pageable), OK);
     }
 
-    @GetMapping(value = "get-all-packages/{userId}")
-    public ResponseEntity<List<Package>> getAllPackagesByUserId(@PathVariable("userId") UUID userId) {
-
-        return new ResponseEntity<>(packageService.findAllByUserIdAndStatusOrderByCreatedAtDesc(userId, PackageStatus.DEFAULT.toString()), OK);
+//    @GetMapping(value = "get-all-packages/{userId}")
+//    public ResponseEntity<List<Package>> getAllPackagesByUserId(@PathVariable("userId") UUID userId) {
+//        return new ResponseEntity<>(packageService.findAllByUserIdAndStatusOrderByCreatedAtDesc(userId, PackageStatus.DEFAULT.toString()), OK);
+//    }
 
     @GetMapping(value = "total-packages/{userId}")
     public ResponseEntity<UserPackageInfo> getTotalPackageCount(@PathVariable("userId") UUID userId) {
