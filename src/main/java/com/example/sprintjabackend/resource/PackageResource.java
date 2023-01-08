@@ -48,11 +48,6 @@ public class PackageResource {
         return new ResponseEntity<>(packageService.findAll(pageable), OK);
     }
 
-//    @GetMapping(value = "get-all-packages/{userId}")
-//    public ResponseEntity<List<Package>> getAllPackagesByUserId(@PathVariable("userId") UUID userId) {
-//        return new ResponseEntity<>(packageService.findAllByUserIdAndStatusOrderByCreatedAtDesc(userId, PackageStatus.DEFAULT.toString()), OK);
-//    }
-
     @GetMapping(value = "total-packages/{userId}")
     public ResponseEntity<UserPackageInfo> getTotalPackageCount(@PathVariable("userId") UUID userId) {
         return new ResponseEntity<>(packageService.getFinalCount(userId), OK);
@@ -82,6 +77,11 @@ public class PackageResource {
         return new ResponseEntity<>(packageService.findAllUserPackagesDelivered(userId, pageable), OK);
     }
 
+    @GetMapping(value = "/get-user-package-by-tracking-number/{trackingNumber}")
+    public ResponseEntity<Package> getUserPackageByTrackingNumber(@PathVariable("trackingNumber") String trackingNumber) {
+        return new ResponseEntity<>(packageService.findByTrackingNumber(trackingNumber), OK);
+    }
+
     @PostMapping(value = "add-new-package")
     public ResponseEntity<Package> addNewPackage(@RequestParam String trackingNumber,
                                                  @RequestParam String courier,
@@ -98,26 +98,28 @@ public class PackageResource {
         return new ResponseEntity<>(newPackage, OK);
     }
 
-    @PutMapping(value = "update-package")
-    public ResponseEntity<Package> updatePackage(@RequestParam String trackingNumber,
-                                                 @RequestParam String courier,
-                                                 @RequestParam String description,
-                                                 @RequestParam double weight,
-                                                 @RequestParam double cost,
-                                                 @RequestParam UUID userId,
-                                                 @RequestParam String oldTrackingNumber) throws TrackingNumberException {
+    @PutMapping(value = "update-package/{oldTrackingNumber}")
+    public ResponseEntity<Package> updatePackage(@RequestBody Package apackage
+            , @PathVariable("oldTrackingNumber") String oldTrackingNumber) throws TrackingNumberException {
         Package updatedPackageData = new Package();
 
-        updatedPackageData.setTrackingNumber(trackingNumber);
-        updatedPackageData.setCourier(courier);
-        updatedPackageData.setDescription(description);
-        updatedPackageData.setWeight(weight);
-        updatedPackageData.setCost(cost);
-        updatedPackageData.setUserId(userId);
+        updatedPackageData.setTrackingNumber(apackage.getTrackingNumber());
+        updatedPackageData.setCourier(apackage.getCourier());
+        updatedPackageData.setDescription(apackage.getDescription());
+        updatedPackageData.setWeight(apackage.getWeight());
+        updatedPackageData.setCost(apackage.getCost());
+        updatedPackageData.setUserId(apackage.getUserId());
 
-        return new ResponseEntity<>(packageService.updatePackage(oldTrackingNumber, trackingNumber, courier, description, weight, cost, userId), OK);
+        return new ResponseEntity<>(packageService.updatePackage(oldTrackingNumber, apackage.getTrackingNumber(),
+                apackage.getCourier(), apackage.getDescription(), apackage.getWeight(),
+                apackage.getCost(), apackage.getUserId()), OK);
 
 
+    }
+
+    @GetMapping(value="view-package/{trackingNumber}")
+    public ResponseEntity<Package> viewPackage(@PathVariable("trackingNumber") String trackingNumber){
+        return new ResponseEntity<>(packageService.findByTrackingNumber(trackingNumber), OK);
     }
 
     @PostMapping(value = "invoice-upload")

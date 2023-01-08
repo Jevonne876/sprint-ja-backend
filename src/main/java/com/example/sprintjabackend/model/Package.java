@@ -46,6 +46,12 @@ public class Package implements Serializable {
     @Column(name = "status")
     private String status;
 
+    @Column(name = "firstName")
+    String firstName;
+
+    @Column(name = "lastName")
+    String lastName;
+
 
     @Column(name = "totalPackagesNotShipped", nullable = true, updatable = true)
     private Long totalPackagesNotShipped;

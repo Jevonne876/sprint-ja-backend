@@ -59,9 +59,11 @@ public class PackageServiceImpl implements PackageService {
         aPackage.setCost(cost);
         aPackage.setUserId(userId);
         aPackage.setInvoice(filename);
+        aPackage.setFirstName(user.getFirstName());
+        aPackage.setLastName(user.getLastName());
         aPackage.setStatus(PackageStatus.NOT_SHIPPED.toString());
         packageRepository.save(aPackage);
-//        emailService.sendNewPackageEmail(user.getFirstName(), user.getLastName(), user.getTrn(), trackingNumber, courier, description, weight, cost);
+        emailService.sendNewPackageEmail(user.getFirstName(), user.getLastName(), user.getTrn(), trackingNumber, courier, description, weight, cost);
         return aPackage;
     }
 
@@ -70,6 +72,7 @@ public class PackageServiceImpl implements PackageService {
                                  String description, double weight, double cost, UUID userId) throws TrackingNumberException {
 
         Package getPackageToBeUpdated = new Package();
+        User user = userService.findUserByUserId(userId);
         getPackageToBeUpdated = packageRepository.findByTrackingNumber(oldTrackingNumber);
         validateTrackingNumber(trackingNumber);
         getPackageToBeUpdated.setTrackingNumber(trackingNumber);
@@ -79,6 +82,8 @@ public class PackageServiceImpl implements PackageService {
         getPackageToBeUpdated.setCost(cost);
         getPackageToBeUpdated.setUserId(userId);
         getPackageToBeUpdated.setUpdatedAt(new Date());
+        getPackageToBeUpdated.setFirstName(user.getFirstName());
+        getPackageToBeUpdated.setLastName(user.getLastName());
         return packageRepository.save(getPackageToBeUpdated);
     }
 
