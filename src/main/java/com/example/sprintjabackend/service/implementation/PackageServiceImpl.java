@@ -61,7 +61,7 @@ public class PackageServiceImpl implements PackageService {
         aPackage.setInvoice(filename);
         aPackage.setStatus(PackageStatus.NOT_SHIPPED.toString());
         packageRepository.save(aPackage);
-        emailService.sendNewPackageEmail(user.getFirstName(), user.getLastName(), user.getTrn(), trackingNumber, courier, description, weight, cost);
+//        emailService.sendNewPackageEmail(user.getFirstName(), user.getLastName(), user.getTrn(), trackingNumber, courier, description, weight, cost);
         return aPackage;
     }
 
