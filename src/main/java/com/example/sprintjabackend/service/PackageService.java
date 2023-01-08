@@ -48,4 +48,14 @@ public interface PackageService {
 
     Long userPackagesDelivered(UUID uuid);
 
+
+
+    Page<Package> findAllUserPackagesNotShipped(UUID userId,Pageable pageable);
+
+    Page<Package> findAllUserPackagesShipped(UUID userId,Pageable pageable);
+
+    Page<Package> findAllUserPackagesReadyForPickup(UUID userId,Pageable pageable);
+
+    Page<Package> findAllUserPackagesDelivered(UUID userId,Pageable pageable);
+
 }

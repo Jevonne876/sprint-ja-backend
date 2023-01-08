@@ -18,7 +18,7 @@ public class SecurityConstant {
     public static final String[] ADMIN_URLS = {"/admin/login", "/admin/sign-up", "/admin/dashboard"};
     public static final String[] PUBLIC_URLS = {"/api/v1/register-new-user", "/api/v1/user-login", "/api/v1/add-new-package",
             "/api/v1/reset-password/**",
-            "/api/v1/send-query/**","/api/v1/invoice-upload","/api/v1/invoice-download/**"};
+            "/api/v1/send-query/**","/api/v1/invoice-download/**"};
 
 
 }

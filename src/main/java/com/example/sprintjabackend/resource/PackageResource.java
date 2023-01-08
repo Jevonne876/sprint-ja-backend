@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import static com.example.sprintjabackend.service.implementation.PackageServiceImpl.DIRECTORY;
@@ -56,10 +57,33 @@ public class PackageResource {
         return new ResponseEntity<>(packageService.findAllByUserIdAndStatusOrderByCreatedAtDesc(userId, PackageStatus.DEFAULT.toString()), OK);
     }
 
-
     @GetMapping(value = "total-packages/{userId}")
     public ResponseEntity<UserPackageInfo> getTotalPackageCount(@PathVariable("userId") UUID userId) {
         return new ResponseEntity<>(packageService.getFinalCount(userId), OK);
+    }
+
+    @GetMapping(value = "/get-all-user-packages-not-shipped/{userId}")
+    public ResponseEntity<Page<Package>> getAllUserPackagesNotShipped(@PathVariable("userId") UUID userId, @RequestParam Optional<Integer> page) {
+        Pageable pageable = PageRequest.of(page.orElse(0), 10);
+        return new ResponseEntity<>(packageService.findAllUserPackagesNotShipped(userId, pageable), OK);
+    }
+
+    @GetMapping(value = "/get-all-user-packages-shipped/{userId}")
+    public ResponseEntity<Page<Package>> getAllUserPackagesShipped(@PathVariable("userId") UUID userId, @RequestParam Optional<Integer> page) {
+        Pageable pageable = PageRequest.of(page.orElse(0), 10);
+        return new ResponseEntity<>(packageService.findAllUserPackagesShipped(userId, pageable), OK);
+    }
+
+    @GetMapping(value = "/get-all-user-packages-ready/{userId}")
+    public ResponseEntity<Page<Package>> getAllUserPackagesReadyForPickup(@PathVariable("userId") UUID userId, @RequestParam Optional<Integer> page) {
+        Pageable pageable = PageRequest.of(page.orElse(0), 10);
+        return new ResponseEntity<>(packageService.findAllUserPackagesReadyForPickup(userId, pageable), OK);
+    }
+
+    @GetMapping(value = "/get-all-user-packages-delivered/{userId}")
+    public ResponseEntity<Page<Package>> getAllUserPackagesDelivered(@PathVariable("userId") UUID userId, @RequestParam Optional<Integer> page) {
+        Pageable pageable = PageRequest.of(page.orElse(0), 10);
+        return new ResponseEntity<>(packageService.findAllUserPackagesDelivered(userId, pageable), OK);
     }
 
     @PostMapping(value = "add-new-package")
@@ -70,10 +94,10 @@ public class PackageResource {
                                                  @RequestParam double cost,
                                                  @RequestParam UUID userId,
                                                  @RequestParam("file") MultipartFile multipartFile
-                                                 ) throws TrackingNumberException, MessagingException, IOException {
+    ) throws TrackingNumberException, MessagingException, IOException {
         Package newPackage;
 
-        newPackage = packageService.addNewPackage(trackingNumber, courier, description, weight, cost,userId, multipartFile);
+        newPackage = packageService.addNewPackage(trackingNumber, courier, description, weight, cost, userId, multipartFile);
 
         return new ResponseEntity<>(newPackage, OK);
     }
@@ -101,7 +125,7 @@ public class PackageResource {
     }
 
     @PostMapping(value = "invoice-upload")
-    public ResponseEntity<String> uploadFile( @RequestParam("file") MultipartFile multipartFile) throws IOException, FileExtensionException {
+    public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile multipartFile) throws IOException, FileExtensionException {
 
         return new ResponseEntity<>(packageService.fileUpload("123", multipartFile), OK);
     }

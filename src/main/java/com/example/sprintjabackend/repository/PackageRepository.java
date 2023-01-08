@@ -22,6 +22,8 @@ public interface PackageRepository extends CrudRepository<Package, Long> {
     Long countByUserIdAndStatus(UUID userId,String status);
 
 
+    Page<Package> findAllByUserIdAndStatusOrderByUpdatedAtDesc(UUID userId,String status, Pageable pageable);
+
     List<Package> findAllByUserIdAndStatusOrderByCreatedAtDesc(UUID uuid, String status);
 
 

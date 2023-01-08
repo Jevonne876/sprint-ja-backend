@@ -102,7 +102,7 @@ public class PackageServiceImpl implements PackageService {
         userPackageInfo.setTotalPackagesReadyForPickup(userPackagesReadyForPickup(userId));
         userPackageInfo.setTotalPackagesDelivered(userPackagesDelivered(userId));
 
-        return  userPackageInfo;
+        return userPackageInfo;
 
     }
 
@@ -169,5 +169,23 @@ public class PackageServiceImpl implements PackageService {
         return packageRepository.countByUserIdAndStatus(userId, PackageStatus.DELIVERED.toString());
     }
 
+    @Override
+    public Page<Package> findAllUserPackagesNotShipped(UUID userId, Pageable pageable) {
+        return packageRepository.findAllByUserIdAndStatusOrderByUpdatedAtDesc(userId, PackageStatus.NOT_SHIPPED.toString(), pageable);
+    }
 
+    @Override
+    public Page<Package> findAllUserPackagesShipped(UUID userId, Pageable pageable) {
+        return packageRepository.findAllByUserIdAndStatusOrderByUpdatedAtDesc(userId, PackageStatus.SHIPPED.toString(), pageable);
+    }
+
+    @Override
+    public Page<Package> findAllUserPackagesReadyForPickup(UUID userId, Pageable pageable) {
+        return packageRepository.findAllByUserIdAndStatusOrderByUpdatedAtDesc(userId, PackageStatus.READY_FOR_PICKUP.toString(), pageable);
+    }
+
+    @Override
+    public Page<Package> findAllUserPackagesDelivered(UUID userId, Pageable pageable) {
+        return packageRepository.findAllByUserIdAndStatusOrderByUpdatedAtDesc(userId, PackageStatus.DELIVERED.toString(), pageable);
+    }
 }
