@@ -5,9 +5,12 @@ import com.example.sprintjabackend.exception.domain.EmailNotFoundException;
 import com.example.sprintjabackend.exception.domain.PhoneNumberException;
 import com.example.sprintjabackend.exception.domain.TrnExistException;
 import com.example.sprintjabackend.model.User;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import javax.mail.MessagingException;
 import java.util.Date;
+import java.util.Optional;
 import java.util.UUID;
 
 
@@ -32,4 +35,12 @@ public interface UserService {
     User findUserByUserId(UUID userId);
 
     void resetPassword(String email) throws EmailNotFoundException, MessagingException;
+
+    Page<User> findAllByRole(Pageable pageable);
+
+    User addNewUserFromAdmin(Long trn,
+                             String firstName, String lastName,
+                             Date dateOfBirth, String email, String phoneNumber,
+                             String streetAddress, String parish,
+                             String pickUpBranch) throws PhoneNumberException, EmailExistException, TrnExistException, MessagingException;
 }

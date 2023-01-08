@@ -1,13 +1,21 @@
 package com.example.sprintjabackend.repository;
 
+import com.example.sprintjabackend.enums.Role;
 import com.example.sprintjabackend.model.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.repository.CrudRepository;
 
+import java.util.List;
 import java.util.UUID;
 
-public interface UserRepository extends JpaRepository<User, Long> {
+public interface AdminRepository extends CrudRepository<User, Long> {
+
+    //returns all admin
+    Page<User> findAllByRole(Pageable pageable, Role role);
+
+    //returns all admin
+    List<User> findAllByRole(Role role);
 
     User findUserByUsername(String username);
 
@@ -19,5 +27,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     User findUserByUserId(UUID userId);
 
-    Page<User> findAllByRole(Pageable pageable, String role);
+    long countByRole(String role);
+
 }

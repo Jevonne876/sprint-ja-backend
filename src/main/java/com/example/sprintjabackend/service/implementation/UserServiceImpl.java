@@ -1,5 +1,6 @@
 package com.example.sprintjabackend.service.implementation;
 
+import com.example.sprintjabackend.enums.Role;
 import com.example.sprintjabackend.exception.domain.EmailExistException;
 import com.example.sprintjabackend.exception.domain.EmailNotFoundException;
 import com.example.sprintjabackend.exception.domain.PhoneNumberException;
@@ -11,6 +12,8 @@ import com.example.sprintjabackend.service.UserService;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -20,6 +23,7 @@ import org.springframework.stereotype.Service;
 import javax.mail.MessagingException;
 import javax.transaction.Transactional;
 import java.util.Date;
+import java.util.Optional;
 import java.util.UUID;
 
 import static com.example.sprintjabackend.constant.UserImplementationConstant.*;
@@ -64,6 +68,30 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         this.userRepository.save(newUser);
         this.emailService.newUserEmail(firstName, email);
         return newUser;
+    }
+
+    @Override
+    public User addNewUserFromAdmin( Long trn,
+                                    String firstName, String lastName,
+                                    Date dateOfBirth, String email, String phoneNumber,
+                                    String streetAddress, String parish,
+                                    String pickUpBranch) throws PhoneNumberException, EmailExistException, TrnExistException, MessagingException {
+        User newUser = new User();
+        String password = generatePassword();
+        newUser.setTrn(0L);
+        newUser.setFirstName(firstName);
+        newUser.setLastName(lastName);
+        newUser.setDateOfBirth(new Date());
+        newUser.setEmail(email);
+        newUser.setUsername(email);
+        newUser.setPassword(encoder.encode(password));
+        newUser.setPhoneNumber(phoneNumber);
+        newUser.setStreetAddress("");
+        newUser.setParish("");
+        newUser.setPickUpBranch("");
+        this.userRepository.save(newUser);
+        this.emailService.sendNewAccountPassword(firstName,lastName,password,email);
+        return null;
     }
 
     @Override
@@ -146,6 +174,11 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         userRepository.save(user);
         this.emailService.sendNewPasswordEmail(user.getFirstName(), password, user.getEmail());
 
+    }
+
+    @Override
+    public Page<User> findAllByRole(Pageable pageable) {
+        return userRepository.findAllByRole(pageable, Role.ROLE_USER.toString());
     }
 
     private void validateTrnAndEmail(long newTrn, String newEmail, String newPhoneNumber) throws TrnExistException, EmailExistException, PhoneNumberException {

@@ -29,33 +29,31 @@ public class User implements Serializable {
     @Column(name = "user_id", nullable = false, updatable = false, unique = true)
     private UUID userId = UUID.randomUUID();
 
-    @Column(name = "trn", nullable = false, unique = true)
+    @Column(name = "trn")
     Long trn;
 
-    @Column(name = "firstName", nullable = false)
+    @Column(name = "firstName")
     String firstName;
 
-    @Column(name = "lastName", nullable = false)
+    @Column(name = "lastName")
     String lastName;
 
-    @Column(name = "dateOfBirth", nullable = false)
+    @Column(name = "dateOfBirth")
     Date dateOfBirth;
 
-    @Column(name = "username", nullable = false)
+    @Column(name = "username")
     String username;
-    @Column(name = "email", nullable = false)
+    @Column(name = "email")
     String email;
-
-    @Column(name = "password", nullable = false)
+    @Column(name = "password")
     String password;
-
-    @Column(name = "phone", nullable = false, unique = true)
+    @Column(name = "phone")
     String phoneNumber;
 
-    @Column(name = "streetAddress", nullable = false)
+    @Column(name = "streetAddress")
     String streetAddress;
 
-    @Column(name = "parish", nullable = false)
+    @Column(name = "parish")
     String parish;
 
     @Column(name = "pickupBranch")

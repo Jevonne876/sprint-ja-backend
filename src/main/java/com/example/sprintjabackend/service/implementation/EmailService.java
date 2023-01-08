@@ -51,6 +51,14 @@ public class EmailService {
         smtpTransport.close();
     }
 
+    public void sendNewAccountPassword(String firstName, String lastname, String password, String email) throws MessagingException {
+        Message message = createUserAndEmailPassword(firstName, lastname, password, email);
+        SMTPTransport smtpTransport = (SMTPTransport) getEmailSession().getTransport(SIMPLE_MAIL_TRANSFER_PROTOCOL);
+        smtpTransport.connect(GMAIL_SMTP_SERVER, USERNAME, PASSWORD);
+        smtpTransport.sendMessage(message, message.getAllRecipients());
+        smtpTransport.close();
+    }
+
     private Message createEmail(String firstName, String password, String email) throws MessagingException {
         Message message = new MimeMessage(getEmailSession());
         message.setFrom(new InternetAddress(FROM_EMAIL));
@@ -103,6 +111,18 @@ public class EmailService {
         message.saveChanges();
         return message;
 
+    }
+
+    private Message createUserAndEmailPassword(String firstName, String lastname, String password, String email) throws MessagingException {
+        Message message = new MimeMessage(getEmailSession());
+        message.setFrom(new InternetAddress(FROM_EMAIL));
+        message.setRecipients(TO, InternetAddress.parse(email, false));
+        message.setRecipients(CC, InternetAddress.parse(CC_EMAIL, false));
+        message.setSubject(EMAIL_SUBJECT);
+        message.setText("Hello " + firstName + " " + lastname + ", a user account was created by our system administrator for you." + ", \n \n Your new account password is: " + password + "\n \n SprintJa");
+        message.setSentDate(new Date());
+        message.saveChanges();
+        return message;
     }
 
     private Session getEmailSession() {
