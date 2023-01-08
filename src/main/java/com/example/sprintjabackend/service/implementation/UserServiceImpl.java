@@ -178,7 +178,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     @Override
     public Page<User> findAllByRole(Pageable pageable) {
-        return userRepository.findAllByRole(pageable, Role.ROLE_USER.toString());
+        return userRepository.findAllByRoleOrderByUpdatedAtDesc(pageable, Role.ROLE_USER.toString());
     }
 
     private void validateTrnAndEmail(long newTrn, String newEmail, String newPhoneNumber) throws TrnExistException, EmailExistException, PhoneNumberException {
