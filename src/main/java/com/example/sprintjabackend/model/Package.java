@@ -57,6 +57,9 @@ public class Package implements Serializable {
     @Column(name = "totalPackagesReadyForPickup", nullable = true, updatable = true)
     private Long totalPackagesReadyForPickUp;
 
+    @Column(name = "invoice")
+    private String invoice;
+
     @Column(name = "updatedAt", nullable = false)
     Date updatedAt = new Date();
 
@@ -65,7 +68,7 @@ public class Package implements Serializable {
 
 
     public Package(UUID packageId, String trackingNumber, String courier, String description,
-                   double weight, double cost, UUID userId, Date updatedAt, Date createdAt) {
+                   double weight, double cost, UUID userId, Date updatedAt, Date createdAt, String invoice) {
         this.packageId = packageId;
         this.trackingNumber = trackingNumber;
         this.courier = courier;
@@ -73,11 +76,13 @@ public class Package implements Serializable {
         this.weight = weight;
         this.cost = cost;
         this.userId = userId;
+        this.invoice = invoice;
         this.updatedAt = updatedAt;
         this.createdAt = createdAt;
+
     }
 
-    public Package(String trackingNumber, String courier, String description, double weight, double cost, UUID userId) {
+    public Package(String trackingNumber, String courier, String description, double weight, double cost, UUID userId, String invoiceUrl) {
         this.trackingNumber = trackingNumber;
         this.courier = courier;
         this.description = description;
@@ -85,6 +90,7 @@ public class Package implements Serializable {
         this.cost = cost;
         this.userId = userId;
         this.status = PackageStatus.DEFAULT.toString();
+        this.invoice = invoice;
         this.updatedAt = new Date();
         this.createdAt = new Date();
     }

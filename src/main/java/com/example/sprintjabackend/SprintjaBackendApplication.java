@@ -49,7 +49,7 @@ public class SprintjaBackendApplication {
                 "Access-Control-Allow-Origin", "Content-Type", "Jwt-Token", "Authorization",
                 "Access-Control-Request-Method", "Access-Control-Request-Headers", "Origin, Accept"));
         configuration.setExposedHeaders(Arrays.asList("Origin", "Content-Type", "Accept", "Jwt-Token", "Authorization",
-                "Access-Control-Origin", "Access-Control-Origin", "Access-Control-Credentials"));
+                "Access-Control-Origin", "Access-Control-Origin", "Access-Control-Credentials","File-Name"));
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;

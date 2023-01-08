@@ -7,7 +7,7 @@ public enum PackageStatus {
     NOT_SHIPPED,
     SHIPPED,
     READY_FOR_PICKUP,
-    DELIVERED
+    DELIVERED,
 
 
 }

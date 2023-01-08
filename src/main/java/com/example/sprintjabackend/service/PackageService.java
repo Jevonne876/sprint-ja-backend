@@ -1,19 +1,24 @@
 package com.example.sprintjabackend.service;
 
 import com.example.sprintjabackend.enums.PackageStatus;
+import com.example.sprintjabackend.exception.domain.FileExtensionException;
 import com.example.sprintjabackend.exception.domain.TrackingNumberException;
 import com.example.sprintjabackend.model.Package;
+import com.example.sprintjabackend.model.UserPackageInfo;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.mail.MessagingException;
+import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
 
 public interface PackageService {
 
     Package addNewPackage(String trackingNumber, String courier, String description,
-                          double weight, double cost, UUID userId) throws TrackingNumberException, MessagingException;
+                          double weight, double cost, UUID userId, MultipartFile file) throws TrackingNumberException, MessagingException, IOException;
 
     Page<Package> findAll(Pageable pageable);
 
@@ -21,16 +26,16 @@ public interface PackageService {
 
     Package findByTrackingNumber(String trackingNumber);
 
+    List<Package> findAllByUserIdAndStatusOrderByCreatedAtDesc(UUID uuid, String Status);
 
     Package updatePackage(String oldPackageNumber, String trackingNumber, String courier,
                           String description, double weight,
                           double cost, UUID userId) throws TrackingNumberException;
 
 
+    Long countByUserIdAndStatus(UUID userId, String status);
 
-    Long  countByUserIdAndStatus(UUID userId,String status);
-
-    Package  getFinalCount(UUID userId);
+    UserPackageInfo getFinalCount(UUID userId);
 
     Long packagesNotShipped();
 
@@ -40,7 +45,23 @@ public interface PackageService {
 
     Long packagesDelivered();
 
-    List<Package> findAllByUserIdAndStatusOrderByCreatedAtDesc(UUID uuid,String Status);
+    String fileUpload(String packageTrackingNumber, MultipartFile multipartFile) throws IOException;
+
+    Long userPackagesNotShipped(UUID uuid);
+
+    Long userPackagesShipped(UUID uuid);
+
+    Long userPackagesReadyForPickup(UUID uuid);
+
+    Long userPackagesDelivered(UUID uuid);
+
+    Page<Package> findAllUserPackagesNotShipped(UUID userId,Pageable pageable);
+
+    Page<Package> findAllUserPackagesShipped(UUID userId,Pageable pageable);
+
+    Page<Package> findAllUserPackagesReadyForPickup(UUID userId,Pageable pageable);
+
+    Page<Package> findAllUserPackagesDelivered(UUID userId,Pageable pageable);
 
     Page<Package> findAllNotShipped(Pageable pageable);
 
