@@ -17,6 +17,9 @@ public interface PackageService {
     Package addNewPackage(String trackingNumber, String courier, String description,
                           double weight, double cost, UUID userId, MultipartFile file) throws TrackingNumberException, MessagingException, IOException;
 
+    Package addNewPackage(String trackingNumber, String courier, String description,String status,
+                          double weight, double cost, UUID userId, MultipartFile file) throws TrackingNumberException, MessagingException, IOException;
+
     Page<Package> findAll(Pageable pageable);
 
     Page<Package> findAllPackageByUserId(UUID userId, Pageable pageable);
@@ -28,6 +31,10 @@ public interface PackageService {
     Package updatePackage(String oldPackageNumber, String trackingNumber, String courier,
                           String description, double weight,
                           double cost, UUID userId) throws TrackingNumberException;
+
+    Package adminUpdatePackage(String oldTrackingNumber, String trackingNumber, String courier,
+                          String description,String status, double weight,
+                          double cost, UUID userId) throws TrackingNumberException, IOException;
 
 
     Long countByUserIdAndStatus(UUID userId, String status);

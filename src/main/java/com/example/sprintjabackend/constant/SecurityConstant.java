@@ -28,7 +28,15 @@ public class SecurityConstant {
             "/api/v1/admin/get-all-user-packages-not-shipped",
             "/api/v1/admin/get-all-user-packages-shipped",
             "/api/v1/admin/get-all-user-packages-ready",
-            "/api/v1/admin/get-all-user-packages-delivered"
+            "/api/v1/admin/get-all-user-packages-delivered",
+            "/api/v1/admin/register-new-admin",
+            "/api/v1/admin/view-user/**",
+            "/api/v1/admin/create-new-pre-alert/**",
+            "/api/v1/admin/view-package/**",
+            "/api/v1/admin/update-package/**",
+            "/api/v1/admin/invoice-download/**",
+            "/api/v1/admin/get-all-admin-users",
+            "/api/v1/admin/delete-user/**"
             };
 
 

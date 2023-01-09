@@ -5,11 +5,13 @@ import com.example.sprintjabackend.exception.domain.EmailExistException;
 import com.example.sprintjabackend.exception.domain.EmailNotFoundException;
 import com.example.sprintjabackend.exception.domain.PhoneNumberException;
 import com.example.sprintjabackend.exception.domain.TrnExistException;
+import com.example.sprintjabackend.model.Package;
 import com.example.sprintjabackend.model.User;
 import com.example.sprintjabackend.model.UserPrincipal;
 import com.example.sprintjabackend.repository.UserRepository;
 import com.example.sprintjabackend.service.UserService;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.tomcat.util.http.fileupload.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
@@ -22,6 +24,10 @@ import org.springframework.stereotype.Service;
 
 import javax.mail.MessagingException;
 import javax.transaction.Transactional;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Date;
 import java.util.Optional;
 import java.util.UUID;
@@ -179,6 +185,17 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     @Override
     public Page<User> findAllByRole(Pageable pageable) {
         return userRepository.findAllByRoleOrderByUpdatedAtDesc(pageable, Role.ROLE_USER.toString());
+    }
+
+    public Page<User> findAllAdminByRole(Pageable pageable){
+        return  userRepository.findAllByRoleOrderByUpdatedAtDesc(pageable,Role.ROLE_SUPER_ADMIN.toString());
+    }
+
+
+    @Override
+    public void deleteUser(String username){
+        User user = userRepository.findUserByUsername(username);
+        userRepository.deleteById(user.getId());
     }
 
     private void validateTrnAndEmail(long newTrn, String newEmail, String newPhoneNumber) throws TrnExistException, EmailExistException, PhoneNumberException {

@@ -68,6 +68,28 @@ public class PackageServiceImpl implements PackageService {
     }
 
     @Override
+    public Package addNewPackage(String trackingNumber, String courier, String description, String status, double weight, double cost, UUID userId, MultipartFile file) throws TrackingNumberException, MessagingException, IOException {
+        User user = userService.findUserByUserId(userId);
+        //saves the file first in order to get filename
+        validateTrackingNumber(trackingNumber);
+        String filename = fileUpload(trackingNumber, file);
+        Package aPackage = new Package();
+        aPackage.setTrackingNumber(trackingNumber);
+        aPackage.setCourier(courier);
+        aPackage.setDescription(description);
+        aPackage.setWeight(weight);
+        aPackage.setCost(cost);
+        aPackage.setUserId(userId);
+        aPackage.setInvoice(filename);
+        aPackage.setFirstName(user.getFirstName());
+        aPackage.setLastName(user.getLastName());
+        aPackage.setStatus(status);
+        packageRepository.save(aPackage);
+//        emailService.sendNewPackageEmail(user.getFirstName(), user.getLastName(), user.getTrn(), trackingNumber, courier, description, weight, cost);
+        return aPackage;
+    }
+
+    @Override
     public Package updatePackage(String oldTrackingNumber, String trackingNumber, String courier,
                                  String description, double weight, double cost, UUID userId) throws TrackingNumberException {
 
@@ -84,6 +106,25 @@ public class PackageServiceImpl implements PackageService {
         getPackageToBeUpdated.setUpdatedAt(new Date());
         getPackageToBeUpdated.setFirstName(user.getFirstName());
         getPackageToBeUpdated.setLastName(user.getLastName());
+        return packageRepository.save(getPackageToBeUpdated);
+    }
+
+    @Override
+    public Package adminUpdatePackage(String oldTrackingNumber, String trackingNumber, String courier, String description, String status, double weight, double cost, UUID userId) throws TrackingNumberException, IOException {
+
+        Package getPackageToBeUpdated = new Package();
+        User user = userService.findUserByUserId(userId);
+        getPackageToBeUpdated = packageRepository.findByTrackingNumber(oldTrackingNumber);
+        getPackageToBeUpdated.setTrackingNumber(trackingNumber);
+        getPackageToBeUpdated.setCourier(courier);
+        getPackageToBeUpdated.setDescription(description);
+        getPackageToBeUpdated.setWeight(weight);
+        getPackageToBeUpdated.setCost(cost);
+        getPackageToBeUpdated.setUserId(userId);
+        getPackageToBeUpdated.setUpdatedAt(new Date());
+        getPackageToBeUpdated.setFirstName(user.getFirstName());
+        getPackageToBeUpdated.setLastName(user.getLastName());
+        getPackageToBeUpdated.setStatus(status);
         return packageRepository.save(getPackageToBeUpdated);
     }
 

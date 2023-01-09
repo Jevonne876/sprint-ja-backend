@@ -38,6 +38,10 @@ public interface UserService {
 
     Page<User> findAllByRole(Pageable pageable);
 
+    public Page<User> findAllAdminByRole(Pageable pageable);
+
+    public void deleteUser(String username);
+
     User addNewUserFromAdmin(Long trn,
                              String firstName, String lastName,
                              Date dateOfBirth, String email, String phoneNumber,
