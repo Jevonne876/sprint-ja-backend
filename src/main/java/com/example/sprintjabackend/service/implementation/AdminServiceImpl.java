@@ -14,6 +14,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -28,16 +29,18 @@ public class AdminServiceImpl implements AdminService {
     private final PackageService packageService;
     private final PackageRepository packageRepository;
 
+    private final EmailService emailService;
 
     @Autowired
     public AdminServiceImpl(AdminRepository adminRepository, BCryptPasswordEncoder passwordEncoder,
                             UserRepository userRepository, PackageService packageService,
-                            PackageRepository packageRepository) {
+                            PackageRepository packageRepository, EmailService emailService) {
         this.adminRepository = adminRepository;
         this.passwordEncoder = passwordEncoder;
         this.userRepository = userRepository;
         this.packageService = packageService;
         this.packageRepository = packageRepository;
+        this.emailService = emailService;
     }
 
     @Override
@@ -102,6 +105,10 @@ public class AdminServiceImpl implements AdminService {
     }
 
 
+    @Override
+    public List<String> findAllEmails() {
+        return adminRepository.findAllByRole(Role.ROLE_USER.toString());
+    }
     private void validateUsername(String username) throws UsernameExistException {
         User adminUser = findAdminByUsername(username);
         if (adminUser != null) {

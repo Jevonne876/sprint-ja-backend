@@ -1,10 +1,10 @@
 package com.example.sprintjabackend.service;
 
-import com.example.sprintjabackend.enums.Role;
 import com.example.sprintjabackend.exception.domain.UsernameExistException;
 import com.example.sprintjabackend.model.ApplicationInfo;
 import com.example.sprintjabackend.model.User;
 
+import java.util.List;
 import java.util.UUID;
 
 public interface AdminService {
@@ -21,4 +21,9 @@ public interface AdminService {
     long countByRoleAdmin();
 //    long totalPackages();
     ApplicationInfo getData();
+
+    List<String> findAllEmails();
+
 }
+
+

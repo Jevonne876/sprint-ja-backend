@@ -1,15 +1,13 @@
 package com.example.sprintjabackend.resource;
 
 import com.example.sprintjabackend.exception.domain.*;
-import com.example.sprintjabackend.model.ApplicationInfo;
-import com.example.sprintjabackend.model.HttpResponse;
+import com.example.sprintjabackend.model.*;
 import com.example.sprintjabackend.model.Package;
-import com.example.sprintjabackend.model.User;
-import com.example.sprintjabackend.model.UserPrincipal;
 import com.example.sprintjabackend.repository.UserRepository;
 import com.example.sprintjabackend.service.AdminService;
 import com.example.sprintjabackend.service.PackageService;
 import com.example.sprintjabackend.service.UserService;
+import com.example.sprintjabackend.service.implementation.EmailService;
 import com.example.sprintjabackend.utility.JwtTokenProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
@@ -21,7 +19,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
@@ -32,6 +29,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -50,18 +49,20 @@ public class AdminResource {
     private final JwtTokenProvider jwtTokenProvider;
     private final UserRepository userRepository;
     private final UserService userService;
-
     private final PackageService packageService;
+
+    private final EmailService emailService;
 
     @Autowired
     public AdminResource(AdminService adminService, AuthenticationManager authenticationManager, JwtTokenProvider jwtTokenProvider,
-                         UserRepository userRepository, UserService userService, PackageService packageService) {
+                         UserRepository userRepository, UserService userService, PackageService packageService, EmailService emailService) {
         this.adminService = adminService;
         this.authenticationManager = authenticationManager;
         this.jwtTokenProvider = jwtTokenProvider;
         this.userRepository = userRepository;
         this.userService = userService;
         this.packageService = packageService;
+        this.emailService = emailService;
     }
 
     @PostMapping(value = "/admin/register-new-admin")
@@ -127,7 +128,7 @@ public class AdminResource {
         MultipartFile file = null;
 
         return new ResponseEntity<>(packageService.adminUpdatePackage(oldTrackingNumber, apackage.getTrackingNumber(),
-                apackage.getCourier(), apackage.getDescription(),apackage.getStatus(), apackage.getWeight(),
+                apackage.getCourier(), apackage.getDescription(), apackage.getStatus(), apackage.getWeight(),
                 apackage.getCost(), apackage.getUserId()), OK);
 
 
@@ -211,6 +212,27 @@ public class AdminResource {
     public ResponseEntity<HttpResponse> deleteUser(@PathVariable("username") String username) throws IOException {
         userService.deleteUser(username);
         return response(OK, "User Deleted Successfully");
+    }
+
+    @PostMapping("/admin/send-email")
+    public ResponseEntity<HttpResponse> sendEmail(
+            @RequestBody Email email) throws MessagingException {
+        emailService.sendMessage(email.getRecipient(), email.getSubject(), email.getMessage());
+        return response(OK, "Email Successfully Sent");
+    }
+
+    @PostMapping("/admin/send-broadcast-email")
+    public ResponseEntity<HttpResponse> sendBroadCastEmail(
+            @RequestParam("subject")String subject, @RequestParam("message")String message) throws MessagingException {
+       List<String> emails = adminService.findAllEmails();
+        emailService.sendBroadCastMessage(emails, subject,message);
+        return response(OK, "Email Successfully Sent");
+    }
+
+
+    @GetMapping("/get-emails")
+    public ResponseEntity<List<String>> getEmails() {
+        return new ResponseEntity<>(adminService.findAllEmails(), OK);
     }
 
 

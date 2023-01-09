@@ -1,9 +1,12 @@
 package com.example.sprintjabackend.repository;
 
 import com.example.sprintjabackend.enums.Role;
+import com.example.sprintjabackend.model.Email;
 import com.example.sprintjabackend.model.User;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
 import java.util.List;
@@ -28,5 +31,8 @@ public interface AdminRepository extends CrudRepository<User, Long> {
     User findUserByUserId(UUID userId);
 
     long countByRole(String role);
+
+    @Query("select u.email from User u")
+    List<String> findAllByRole(String role);
 
 }
