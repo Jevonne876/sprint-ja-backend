@@ -6,9 +6,11 @@ import org.springframework.stereotype.Service;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Session;
+import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import java.util.Date;
+import java.util.List;
 import java.util.Properties;
 
 import static com.example.sprintjabackend.constant.EmailConstant.*;
@@ -57,6 +59,24 @@ public class EmailService {
         smtpTransport.connect(GMAIL_SMTP_SERVER, USERNAME, PASSWORD);
         smtpTransport.sendMessage(message, message.getAllRecipients());
         smtpTransport.close();
+    }
+
+    public void sendMessage(String recipient, String subject, String text) throws MessagingException {
+        Message message = sendEmail(recipient, subject, text);
+        SMTPTransport smtpTransport = (SMTPTransport) getEmailSession().getTransport(SIMPLE_MAIL_TRANSFER_PROTOCOL);
+        smtpTransport.connect(GMAIL_SMTP_SERVER, USERNAME, PASSWORD);
+        smtpTransport.sendMessage(message, message.getAllRecipients());
+        smtpTransport.close();
+    }
+
+    public void sendBroadCastMessage(List<String> emails, String subject, String text) throws MessagingException {
+        for (String email : emails) {
+            Message message = sendEmail(email, subject, text);
+            SMTPTransport smtpTransport = (SMTPTransport) getEmailSession().getTransport(SIMPLE_MAIL_TRANSFER_PROTOCOL);
+            smtpTransport.connect(GMAIL_SMTP_SERVER, USERNAME, PASSWORD);
+            smtpTransport.sendMessage(message, message.getAllRecipients());
+            smtpTransport.close();
+        }
     }
 
     private Message createEmail(String firstName, String password, String email) throws MessagingException {
@@ -124,6 +144,36 @@ public class EmailService {
         message.saveChanges();
         return message;
     }
+
+
+
+
+    private Message sendEmail(String recipient, String subject, String text) throws MessagingException {
+        Message message = new MimeMessage(getEmailSession());
+        message.setFrom(new InternetAddress(FROM_EMAIL));
+        message.setRecipients(TO, InternetAddress.parse(recipient, false));
+        message.setRecipients(CC, InternetAddress.parse(CC_EMAIL, false));
+        message.setSubject(subject);
+        message.setText(text + "\n \n SprintJa");
+        message.setSentDate(new Date());
+        message.saveChanges();
+        return message;
+
+    }
+
+    private Message sendBroadCastEmail(String email, String subject, String text) throws MessagingException {
+        Message message = new MimeMessage(getEmailSession());
+        message.setFrom(new InternetAddress(FROM_EMAIL));
+        message.setRecipients(CC, InternetAddress.parse(CC_EMAIL, false));
+            message.setRecipients(TO, InternetAddress.parse(email, false));
+            message.setSubject(subject);
+            message.setText(text + "\n \n SprintJa");
+            message.setSentDate(new Date());
+            message.saveChanges();
+
+        return message;
+    }
+
 
     private Session getEmailSession() {
         Properties properties = System.getProperties();

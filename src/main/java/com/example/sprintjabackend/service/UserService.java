@@ -10,6 +10,7 @@ import org.springframework.data.domain.Pageable;
 
 import javax.mail.MessagingException;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -41,6 +42,8 @@ public interface UserService {
     public Page<User> findAllAdminByRole(Pageable pageable);
 
     public void deleteUser(String username);
+
+
 
     User addNewUserFromAdmin(Long trn,
                              String firstName, String lastName,
