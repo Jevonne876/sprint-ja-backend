@@ -113,6 +113,21 @@ public class AdminResource {
         return new ResponseEntity<>(newPackage, OK);
     }
 
+    @PostMapping("/admin/send-email")
+    public ResponseEntity<HttpResponse> sendEmail(
+            @RequestBody Email email) throws MessagingException {
+        emailService.sendMessage(email.getRecipient(), email.getSubject(), email.getMessage());
+        return response(OK, "Email Successfully Sent");
+    }
+
+    @PostMapping("/admin/send-broadcast-email")
+    public ResponseEntity<HttpResponse> sendBroadCastEmail(
+            @RequestParam("subject") String subject, @RequestParam("message") String message) throws MessagingException {
+        List<String> emails = adminService.findAllEmails();
+        emailService.sendBroadCastMessage(emails, subject, message);
+        return response(OK, "Email Successfully Sent");
+    }
+
     @PutMapping(value = "/admin/update-package/{oldTrackingNumber}")
     public ResponseEntity<Package> updatePackage(@RequestBody Package apackage
             , @PathVariable("oldTrackingNumber") String oldTrackingNumber) throws TrackingNumberException, IOException {
@@ -130,9 +145,24 @@ public class AdminResource {
         return new ResponseEntity<>(packageService.adminUpdatePackage(oldTrackingNumber, apackage.getTrackingNumber(),
                 apackage.getCourier(), apackage.getDescription(), apackage.getStatus(), apackage.getWeight(),
                 apackage.getCost(), apackage.getUserId()), OK);
-
-
     }
+
+    @PutMapping(value = "/admin/file-upload/{trackingNumber}")
+    public ResponseEntity<HttpResponse> fileUpload(@PathVariable("trackingNumber") String trackingNumber,@RequestParam MultipartFile file) throws IOException {
+
+        Package aPackage = packageService.findByTrackingNumber(trackingNumber);
+
+        User user = userService.findUserByUserId(aPackage.getUserId());
+
+        String fileName = packageService.fileUpload(trackingNumber, file);
+
+        aPackage.setInvoice(fileName);
+        packageService.update(aPackage);
+
+        return response(OK,"File uploaded");
+    }
+
+
 
 
     @GetMapping(value = "/admin/view-package/{trackingNumber}")
@@ -208,31 +238,23 @@ public class AdminResource {
                 .headers(httpHeaders).body(resource);
     }
 
+    @GetMapping("/get-emails")
+    public ResponseEntity<List<String>> getEmails() {
+        return new ResponseEntity<>(adminService.findAllEmails(), OK);
+    }
+
+
     @DeleteMapping("/admin/delete-user/{username}")
     public ResponseEntity<HttpResponse> deleteUser(@PathVariable("username") String username) throws IOException {
         userService.deleteUser(username);
         return response(OK, "User Deleted Successfully");
     }
 
-    @PostMapping("/admin/send-email")
-    public ResponseEntity<HttpResponse> sendEmail(
-            @RequestBody Email email) throws MessagingException {
-        emailService.sendMessage(email.getRecipient(), email.getSubject(), email.getMessage());
-        return response(OK, "Email Successfully Sent");
-    }
+    @DeleteMapping("/admin/delete-package/{trackingNumber}")
+    public ResponseEntity<HttpResponse> deletePackage(@PathVariable("trackingNumber") String trackingNumber) throws IOException {
 
-    @PostMapping("/admin/send-broadcast-email")
-    public ResponseEntity<HttpResponse> sendBroadCastEmail(
-            @RequestParam("subject")String subject, @RequestParam("message")String message) throws MessagingException {
-       List<String> emails = adminService.findAllEmails();
-        emailService.sendBroadCastMessage(emails, subject,message);
-        return response(OK, "Email Successfully Sent");
-    }
-
-
-    @GetMapping("/get-emails")
-    public ResponseEntity<List<String>> getEmails() {
-        return new ResponseEntity<>(adminService.findAllEmails(), OK);
+        packageService.deletePackage(trackingNumber);
+        return response(OK, "User Deleted Successfully");
     }
 
 

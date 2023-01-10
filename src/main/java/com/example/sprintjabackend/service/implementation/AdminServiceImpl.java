@@ -109,6 +109,9 @@ public class AdminServiceImpl implements AdminService {
     public List<String> findAllEmails() {
         return adminRepository.findAllByRole(Role.ROLE_USER.toString());
     }
+
+
+
     private void validateUsername(String username) throws UsernameExistException {
         User adminUser = findAdminByUsername(username);
         if (adminUser != null) {

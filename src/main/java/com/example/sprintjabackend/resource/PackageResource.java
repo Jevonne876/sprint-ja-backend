@@ -2,9 +2,12 @@ package com.example.sprintjabackend.resource;
 
 
 import com.example.sprintjabackend.exception.domain.TrackingNumberException;
+import com.example.sprintjabackend.model.HttpResponse;
 import com.example.sprintjabackend.model.Package;
+import com.example.sprintjabackend.model.User;
 import com.example.sprintjabackend.model.UserPackageInfo;
 import com.example.sprintjabackend.service.PackageService;
+import com.example.sprintjabackend.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -12,6 +15,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -36,10 +40,12 @@ import static org.springframework.http.HttpStatus.OK;
 public class PackageResource {
 
     private final PackageService packageService;
+    private final UserService userService;
 
     @Autowired
-    public PackageResource(PackageService packageService) {
+    public PackageResource(PackageService packageService, UserService userService) {
         this.packageService = packageService;
+        this.userService = userService;
     }
 
     @GetMapping(value = "get-all-packages")
@@ -122,10 +128,19 @@ public class PackageResource {
         return new ResponseEntity<>(packageService.findByTrackingNumber(trackingNumber), OK);
     }
 
-    @PostMapping(value = "invoice-upload")
-    public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile multipartFile) throws IOException {
+    @PutMapping(value = "invoice-upload/{trackingNumber}")
+    public ResponseEntity<HttpResponse> fileUpload(@PathVariable("trackingNumber") String trackingNumber, @RequestParam MultipartFile file) throws IOException {
 
-        return new ResponseEntity<>(packageService.fileUpload("123", multipartFile), OK);
+        Package aPackage = packageService.findByTrackingNumber(trackingNumber);
+
+        User user = userService.findUserByUserId(aPackage.getUserId());
+
+        String fileName = packageService.fileUpload(trackingNumber, file);
+
+        aPackage.setInvoice(fileName);
+        packageService.update(aPackage);
+
+        return  response(OK,"File uploaded Successfully");
     }
 
 
@@ -143,5 +158,9 @@ public class PackageResource {
                 .headers(httpHeaders).body(resource);
     }
 
+    private ResponseEntity<HttpResponse> response(HttpStatus httpStatus, String message) {
+        return new ResponseEntity<>(new HttpResponse(httpStatus.value(), httpStatus, httpStatus.getReasonPhrase().toUpperCase(),
+                message), httpStatus);
+    }
 
 }

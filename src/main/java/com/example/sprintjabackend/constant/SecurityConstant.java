@@ -38,7 +38,9 @@ public class SecurityConstant {
             "/api/v1/admin/get-all-admin-users",
             "/api/v1/admin/delete-user/**",
             "/api/v1/admin/send-email",
-            "/api/v1/admin/send-broadcast-email"
+            "/api/v1/admin/send-broadcast-email",
+            "/api/v1/admin/delete-package/**",
+            "/api/v1/admin/file-upload/**"
             };
 
 

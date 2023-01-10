@@ -259,6 +259,17 @@ public class PackageServiceImpl implements PackageService {
         return packageRepository.findAllByUserIdAndStatusOrderByUpdatedAtDesc(userId, PackageStatus.DELIVERED.toString(), pageable);
     }
 
+    @Override
+    public void deletePackage(String trackingNumber) {
+        Package aPackage = packageRepository.findByTrackingNumber(trackingNumber);
+        packageRepository.deleteById(aPackage.getId());
+    }
+
+    @Override
+    public Package update(Package aPackage) {
+        return  packageRepository.save(aPackage);
+    }
+
     private void validateTrackingNumber(String trackingNumber) throws TrackingNumberException {
 
         Package findByTrackingNumber = packageRepository.findByTrackingNumber(trackingNumber);

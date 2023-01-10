@@ -75,4 +75,10 @@ public interface PackageService {
 
     Page<Package> findAllDelivered(Pageable pageable);
 
+    void deletePackage(String trackingNumber);
+
+    Package update ( Package apackage);
+
+
+
 }
