@@ -97,7 +97,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         newUser.setParish("");
         newUser.setPickUpBranch("");
         this.userRepository.save(newUser);
-//        this.emailService.sendNewAccountPassword(firstName,lastName,password,email);
+        this.emailService.sendNewAccountPassword(firstName,lastName,password,email);
         return null;
     }
 
