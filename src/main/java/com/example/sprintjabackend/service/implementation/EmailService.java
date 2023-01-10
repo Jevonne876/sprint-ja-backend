@@ -78,6 +78,14 @@ public class EmailService {
             smtpTransport.close();
         }
     }
+    public void sendPackageStatusUpdateEmail(String firstName, String lastName, String trackingNumber, String status, String email) throws MessagingException {
+        Message message = createEmail(firstName,lastName,trackingNumber,status,email);
+        SMTPTransport smtpTransport = (SMTPTransport) getEmailSession().getTransport(SIMPLE_MAIL_TRANSFER_PROTOCOL);
+        smtpTransport.connect(GMAIL_SMTP_SERVER, USERNAME, PASSWORD);
+        smtpTransport.sendMessage(message, message.getAllRecipients());
+        smtpTransport.close();
+
+    }
 
     private Message createEmail(String firstName, String password, String email) throws MessagingException {
         Message message = new MimeMessage(getEmailSession());
@@ -91,6 +99,8 @@ public class EmailService {
         return message;
     }
 
+
+
     private Message createEmail(String firstName, String email) throws MessagingException {
         Message message = new MimeMessage(getEmailSession());
         message.setFrom(new InternetAddress(FROM_EMAIL));
@@ -98,6 +108,20 @@ public class EmailService {
         message.setRecipients(CC, InternetAddress.parse(CC_EMAIL, false));
         message.setSubject("New USER");
         message.setText("Hello " + firstName + ", Welcome to our family " + "\n \n Regards, SprintJA Limited");
+        message.setSentDate(new Date());
+        message.saveChanges();
+        return message;
+    }
+
+    private Message createEmail(String firstName, String lastName, String trackingNumber, String status, String email) throws MessagingException {
+        Message message = new MimeMessage(getEmailSession());
+        message.setFrom(new InternetAddress(FROM_EMAIL));
+        message.setFrom(new InternetAddress(FROM_EMAIL));
+        message.setRecipients(TO, InternetAddress.parse(email, false));
+        message.setRecipients(CC, InternetAddress.parse(CC_EMAIL, false));
+        message.setSubject("PACKAGE UPDATE");
+        message.setText("Hello: " + firstName + " " + lastName + ", your pack with tracking number:  " + trackingNumber + " status was updated to: " + status + ".\n"
+                + "Please upload invoice if you have not do so as yet." + "\n \n Regards, SprintJA Limited");
         message.setSentDate(new Date());
         message.saveChanges();
         return message;
@@ -146,8 +170,6 @@ public class EmailService {
     }
 
 
-
-
     private Message sendEmail(String recipient, String subject, String text) throws MessagingException {
         Message message = new MimeMessage(getEmailSession());
         message.setFrom(new InternetAddress(FROM_EMAIL));
@@ -165,11 +187,11 @@ public class EmailService {
         Message message = new MimeMessage(getEmailSession());
         message.setFrom(new InternetAddress(FROM_EMAIL));
         message.setRecipients(CC, InternetAddress.parse(CC_EMAIL, false));
-            message.setRecipients(TO, InternetAddress.parse(email, false));
-            message.setSubject(subject);
-            message.setText(text + "\n \n SprintJa");
-            message.setSentDate(new Date());
-            message.saveChanges();
+        message.setRecipients(TO, InternetAddress.parse(email, false));
+        message.setSubject(subject);
+        message.setText(text + "\n \n SprintJa");
+        message.setSentDate(new Date());
+        message.saveChanges();
 
         return message;
     }

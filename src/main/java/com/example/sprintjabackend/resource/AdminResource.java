@@ -130,7 +130,7 @@ public class AdminResource {
 
     @PutMapping(value = "/admin/update-package/{oldTrackingNumber}")
     public ResponseEntity<Package> updatePackage(@RequestBody Package apackage
-            , @PathVariable("oldTrackingNumber") String oldTrackingNumber) throws TrackingNumberException, IOException {
+            , @PathVariable("oldTrackingNumber") String oldTrackingNumber) throws TrackingNumberException, IOException, MessagingException {
         Package updatedPackageData = new Package();
 
         updatedPackageData.setTrackingNumber(apackage.getTrackingNumber());

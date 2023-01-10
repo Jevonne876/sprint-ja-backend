@@ -85,7 +85,6 @@ public class PackageServiceImpl implements PackageService {
         aPackage.setLastName(user.getLastName());
         aPackage.setStatus(status);
         packageRepository.save(aPackage);
-//        emailService.sendNewPackageEmail(user.getFirstName(), user.getLastName(), user.getTrn(), trackingNumber, courier, description, weight, cost);
         return aPackage;
     }
 
@@ -110,7 +109,7 @@ public class PackageServiceImpl implements PackageService {
     }
 
     @Override
-    public Package adminUpdatePackage(String oldTrackingNumber, String trackingNumber, String courier, String description, String status, double weight, double cost, UUID userId) throws TrackingNumberException, IOException {
+    public Package adminUpdatePackage(String oldTrackingNumber, String trackingNumber, String courier, String description, String status, double weight, double cost, UUID userId) throws TrackingNumberException, IOException, MessagingException {
 
         Package getPackageToBeUpdated = new Package();
         User user = userService.findUserByUserId(userId);
@@ -125,6 +124,7 @@ public class PackageServiceImpl implements PackageService {
         getPackageToBeUpdated.setFirstName(user.getFirstName());
         getPackageToBeUpdated.setLastName(user.getLastName());
         getPackageToBeUpdated.setStatus(status);
+        emailService.sendPackageStatusUpdateEmail(user.getFirstName(), user.getLastName(), trackingNumber, getPackageToBeUpdated.getStatus(), user.getEmail());
         return packageRepository.save(getPackageToBeUpdated);
     }
 
@@ -137,25 +137,25 @@ public class PackageServiceImpl implements PackageService {
     @Override
     public Page<Package> findAllNotShipped(Pageable pageable) {
 
-        return packageRepository.findAllByStatus(pageable,PackageStatus.NOT_SHIPPED.toString());
+        return packageRepository.findAllByStatus(pageable, PackageStatus.NOT_SHIPPED.toString());
     }
 
     @Override
     public Page<Package> findAllShipped(Pageable pageable) {
 
-        return packageRepository.findAllByStatus(pageable,PackageStatus.SHIPPED.toString());
+        return packageRepository.findAllByStatus(pageable, PackageStatus.SHIPPED.toString());
     }
 
     @Override
     public Page<Package> findAllReadyForPickup(Pageable pageable) {
 
-        return packageRepository.findAllByStatus(pageable,PackageStatus.READY_FOR_PICKUP.name().toString());
+        return packageRepository.findAllByStatus(pageable, PackageStatus.READY_FOR_PICKUP.name().toString());
     }
 
     @Override
     public Page<Package> findAllDelivered(Pageable pageable) {
 
-        return packageRepository.findAllByStatus(pageable,PackageStatus.DELIVERED.name().toString());
+        return packageRepository.findAllByStatus(pageable, PackageStatus.DELIVERED.name().toString());
     }
 
     @Override
@@ -267,7 +267,7 @@ public class PackageServiceImpl implements PackageService {
 
     @Override
     public Package update(Package aPackage) {
-        return  packageRepository.save(aPackage);
+        return packageRepository.save(aPackage);
     }
 
     private void validateTrackingNumber(String trackingNumber) throws TrackingNumberException {

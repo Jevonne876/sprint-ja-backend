@@ -34,7 +34,7 @@ public interface PackageService {
 
     Package adminUpdatePackage(String oldTrackingNumber, String trackingNumber, String courier,
                           String description,String status, double weight,
-                          double cost, UUID userId) throws TrackingNumberException, IOException;
+                          double cost, UUID userId) throws TrackingNumberException, IOException, MessagingException;
 
 
     Long countByUserIdAndStatus(UUID userId, String status);
