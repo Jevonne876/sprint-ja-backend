@@ -40,7 +40,8 @@ public class SecurityConstant {
             "/api/v1/admin/send-email",
             "/api/v1/admin/send-broadcast-email",
             "/api/v1/admin/delete-package/**",
-            "/api/v1/admin/file-upload/**"
+            "/api/v1/admin/file-upload/**",
+            "/api/v1/invoice-download/**"
             };
 
 

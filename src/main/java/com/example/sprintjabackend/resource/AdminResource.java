@@ -147,6 +147,10 @@ public class AdminResource {
 
         Package aPackage = packageService.findByTrackingNumber(trackingNumber);
 
+        if (!aPackage.getInvoice().equals("") || !aPackage.getInvoice().equals(null)) {
+            fileStore.deleteFile(aPackage.getInvoice());
+        }
+
         User user = userService.findUserByUserId(aPackage.getUserId());
 
         String fileName = packageService.fileUpload(trackingNumber, file);

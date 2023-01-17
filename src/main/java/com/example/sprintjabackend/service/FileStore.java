@@ -49,10 +49,7 @@ public class FileStore {
        return IOUtils.toByteArray(s3ObjectInputStream);
     }
 
-    public FileOutputStream toFile(String filename) throws IOException {
-        FileOutputStream fileOutputStream = new FileOutputStream(filename);
-        fileOutputStream.write(downloadFile(filename));
-        fileOutputStream.close();
-        return fileOutputStream;
-    }
+   public void deleteFile(String filename){
+        amazonS3.deleteObject(BUCKET_NAME.getBucketName(),filename);
+   }
 }

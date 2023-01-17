@@ -6,11 +6,11 @@ import com.example.sprintjabackend.model.HttpResponse;
 import com.example.sprintjabackend.model.Package;
 import com.example.sprintjabackend.model.User;
 import com.example.sprintjabackend.model.UserPackageInfo;
+import com.example.sprintjabackend.service.FileStore;
 import com.example.sprintjabackend.service.PackageService;
 import com.example.sprintjabackend.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
-import org.springframework.core.io.UrlResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -23,16 +23,11 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.mail.MessagingException;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.Optional;
 import java.util.UUID;
 
-import static com.example.sprintjabackend.service.implementation.PackageServiceImpl.DIRECTORY;
 import static java.nio.file.Paths.get;
-import static org.springframework.http.HttpHeaders.CONTENT_DISPOSITION;
 import static org.springframework.http.HttpStatus.OK;
 
 @Controller
@@ -41,11 +36,13 @@ public class PackageResource {
 
     private final PackageService packageService;
     private final UserService userService;
+    private final FileStore fileStore;
 
     @Autowired
-    public PackageResource(PackageService packageService, UserService userService) {
+    public PackageResource(PackageService packageService, UserService userService, FileStore fileStore) {
         this.packageService = packageService;
         this.userService = userService;
+        this.fileStore = fileStore;
     }
 
     @GetMapping(value = "get-all-packages")
@@ -123,8 +120,8 @@ public class PackageResource {
 
     }
 
-    @GetMapping(value="view-package/{trackingNumber}")
-    public ResponseEntity<Package> viewPackage(@PathVariable("trackingNumber") String trackingNumber){
+    @GetMapping(value = "view-package/{trackingNumber}")
+    public ResponseEntity<Package> viewPackage(@PathVariable("trackingNumber") String trackingNumber) {
         return new ResponseEntity<>(packageService.findByTrackingNumber(trackingNumber), OK);
     }
 
@@ -133,29 +130,26 @@ public class PackageResource {
 
         Package aPackage = packageService.findByTrackingNumber(trackingNumber);
 
+        if (!aPackage.getInvoice().equals("") || !aPackage.getInvoice().equals(null)) {
+            fileStore.deleteFile(aPackage.getInvoice());
+        }
         User user = userService.findUserByUserId(aPackage.getUserId());
 
-        String fileName = packageService.fileUpload(trackingNumber, file);
+        String fileName = fileStore.uploadFile(file);
 
         aPackage.setInvoice(fileName);
         packageService.update(aPackage);
 
-        return  response(OK,"File uploaded Successfully");
+        return response(OK, "File uploaded Successfully");
     }
 
 
     @GetMapping("invoice-download/{filename}")
-    public ResponseEntity<Resource> downloadFiles(@PathVariable("filename") String filename) throws IOException {
-        Path filePath = get(DIRECTORY).toAbsolutePath().normalize().resolve(filename);
-        if (!Files.exists(filePath)) {
-            throw new FileNotFoundException(filename + " was not found on the server");
-        }
-        Resource resource = new UrlResource(filePath.toUri());
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.add("File-Name", filename);
-        httpHeaders.add(CONTENT_DISPOSITION, "attachment;File-Name=" + resource.getFilename());
-        return ResponseEntity.ok().contentType(MediaType.parseMediaType(Files.probeContentType(filePath)))
-                .headers(httpHeaders).body(resource);
+    public ResponseEntity<byte[]> downloadFiles(@PathVariable("filename") String filename) throws IOException {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-type", MediaType.ALL_VALUE);
+        headers.add("Content-Disposition", "attachment; filename=" + filename);
+        return new ResponseEntity<>(fileStore.downloadFile(filename), headers, OK);
     }
 
     private ResponseEntity<HttpResponse> response(HttpStatus httpStatus, String message) {
