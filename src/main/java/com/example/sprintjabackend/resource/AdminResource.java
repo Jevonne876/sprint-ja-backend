@@ -5,13 +5,12 @@ import com.example.sprintjabackend.model.*;
 import com.example.sprintjabackend.model.Package;
 import com.example.sprintjabackend.repository.UserRepository;
 import com.example.sprintjabackend.service.AdminService;
+import com.example.sprintjabackend.service.FileStore;
 import com.example.sprintjabackend.service.PackageService;
 import com.example.sprintjabackend.service.UserService;
 import com.example.sprintjabackend.service.implementation.EmailService;
 import com.example.sprintjabackend.utility.JwtTokenProvider;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.UrlResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -25,19 +24,13 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.mail.MessagingException;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 import static com.example.sprintjabackend.constant.SecurityConstant.JWT_TOKEN_HEADER;
-import static com.example.sprintjabackend.service.implementation.PackageServiceImpl.DIRECTORY;
 import static java.nio.file.Paths.get;
-import static org.springframework.http.HttpHeaders.CONTENT_DISPOSITION;
 import static org.springframework.http.HttpStatus.OK;
 
 @RestController
@@ -50,12 +43,13 @@ public class AdminResource {
     private final UserRepository userRepository;
     private final UserService userService;
     private final PackageService packageService;
-
     private final EmailService emailService;
+
+    private final FileStore fileStore;
 
     @Autowired
     public AdminResource(AdminService adminService, AuthenticationManager authenticationManager, JwtTokenProvider jwtTokenProvider,
-                         UserRepository userRepository, UserService userService, PackageService packageService, EmailService emailService) {
+                         UserRepository userRepository, UserService userService, PackageService packageService, EmailService emailService, FileStore fileStore) {
         this.adminService = adminService;
         this.authenticationManager = authenticationManager;
         this.jwtTokenProvider = jwtTokenProvider;
@@ -63,6 +57,7 @@ public class AdminResource {
         this.userService = userService;
         this.packageService = packageService;
         this.emailService = emailService;
+        this.fileStore = fileStore;
     }
 
     @PostMapping(value = "/admin/register-new-admin")
@@ -148,7 +143,7 @@ public class AdminResource {
     }
 
     @PutMapping(value = "/admin/file-upload/{trackingNumber}")
-    public ResponseEntity<HttpResponse> fileUpload(@PathVariable("trackingNumber") String trackingNumber,@RequestParam MultipartFile file) throws IOException {
+    public ResponseEntity<HttpResponse> fileUpload(@PathVariable("trackingNumber") String trackingNumber, @RequestParam MultipartFile file) throws IOException {
 
         Package aPackage = packageService.findByTrackingNumber(trackingNumber);
 
@@ -159,10 +154,8 @@ public class AdminResource {
         aPackage.setInvoice(fileName);
         packageService.update(aPackage);
 
-        return response(OK,"File uploaded");
+        return response(OK, "File uploaded");
     }
-
-
 
 
     @GetMapping(value = "/admin/view-package/{trackingNumber}")
@@ -225,17 +218,11 @@ public class AdminResource {
     }
 
     @GetMapping("/admin/invoice-download/{filename}")
-    public ResponseEntity<Resource> downloadFiles(@PathVariable("filename") String filename) throws IOException {
-        Path filePath = get(DIRECTORY).toAbsolutePath().normalize().resolve(filename);
-        if (!Files.exists(filePath)) {
-            throw new FileNotFoundException(filename + " was not found on the server");
-        }
-        Resource resource = new UrlResource(filePath.toUri());
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.add("File-Name", filename);
-        httpHeaders.add(CONTENT_DISPOSITION, "attachment;File-Name=" + resource.getFilename());
-        return ResponseEntity.ok().contentType(MediaType.parseMediaType(Files.probeContentType(filePath)))
-                .headers(httpHeaders).body(resource);
+    public ResponseEntity<byte[]> downloadFiles(@PathVariable("filename") String filename) throws IOException {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-type", MediaType.ALL_VALUE);
+        headers.add("Content-Disposition", "attachment; filename=" + filename);
+        return new ResponseEntity<>(fileStore.downloadFile(filename), headers, OK);
     }
 
     @GetMapping("/get-emails")
