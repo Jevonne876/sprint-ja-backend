@@ -6,6 +6,7 @@ import com.example.sprintjabackend.model.Package;
 import com.example.sprintjabackend.model.User;
 import com.example.sprintjabackend.model.UserPackageInfo;
 import com.example.sprintjabackend.repository.PackageRepository;
+import com.example.sprintjabackend.service.FileStore;
 import com.example.sprintjabackend.service.PackageService;
 import com.example.sprintjabackend.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,11 +39,14 @@ public class PackageServiceImpl implements PackageService {
 
     public static final String DIRECTORY = "invoices";
 
+    private final FileStore fileStore;
+
     @Autowired
-    public PackageServiceImpl(PackageRepository packageRepository, EmailService emailService, UserService userService) {
+    public PackageServiceImpl(PackageRepository packageRepository, EmailService emailService, UserService userService, FileStore fileStore) {
         this.packageRepository = packageRepository;
         this.emailService = emailService;
         this.userService = userService;
+        this.fileStore = fileStore;
     }
 
     @Override
@@ -50,7 +54,7 @@ public class PackageServiceImpl implements PackageService {
         User user = userService.findUserByUserId(userId);
         //saves the file first in order to get filename
         validateTrackingNumber(trackingNumber);
-        String filename = fileUpload(trackingNumber, file);
+        String filename = fileStore.uploadFile(file);
         Package aPackage = new Package();
         aPackage.setTrackingNumber(trackingNumber);
         aPackage.setCourier(courier);
@@ -63,7 +67,7 @@ public class PackageServiceImpl implements PackageService {
         aPackage.setLastName(user.getLastName());
         aPackage.setStatus(PackageStatus.NOT_SHIPPED.toString());
         packageRepository.save(aPackage);
-        emailService.sendNewPackageEmail(user.getFirstName(), user.getLastName(), user.getTrn(), trackingNumber, courier, description, weight, cost);
+//        emailService.sendNewPackageEmail(user.getFirstName(), user.getLastName(), user.getTrn(), trackingNumber, courier, description, weight, cost);
         return aPackage;
     }
 
