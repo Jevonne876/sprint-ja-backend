@@ -6,6 +6,6 @@ import lombok.Getter;
 @AllArgsConstructor
 @Getter
 public enum BucketName {
-    BUCKET_NAME("sprint-ja-bucket");
+    BUCKET_NAME("sprint-ja-fileupload");
     private final String bucketName;
 }
