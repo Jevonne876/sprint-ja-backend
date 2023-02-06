@@ -6,6 +6,7 @@ import com.example.sprintjabackend.model.HttpResponse;
 import com.example.sprintjabackend.model.Package;
 import com.example.sprintjabackend.model.User;
 import com.example.sprintjabackend.model.UserPackageInfo;
+import com.example.sprintjabackend.repository.PackageRepository;
 import com.example.sprintjabackend.service.FileStore;
 import com.example.sprintjabackend.service.PackageService;
 import com.example.sprintjabackend.service.UserService;
@@ -24,6 +25,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.mail.MessagingException;
 import java.io.IOException;
+import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -37,12 +40,15 @@ public class PackageResource {
     private final PackageService packageService;
     private final UserService userService;
     private final FileStore fileStore;
+    private final PackageRepository packageRepository;
 
     @Autowired
-    public PackageResource(PackageService packageService, UserService userService, FileStore fileStore) {
+    public PackageResource(PackageService packageService, UserService userService, FileStore fileStore,
+                           PackageRepository packageRepository) {
         this.packageService = packageService;
         this.userService = userService;
         this.fileStore = fileStore;
+        this.packageRepository = packageRepository;
     }
 
     @GetMapping(value = "get-all-packages")
@@ -142,6 +148,8 @@ public class PackageResource {
 
         return response(OK, "File uploaded Successfully");
     }
+
+
 
 
     @GetMapping("invoice-download/{filename}")

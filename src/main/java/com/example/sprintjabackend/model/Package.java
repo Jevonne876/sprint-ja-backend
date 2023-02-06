@@ -67,9 +67,11 @@ public class Package implements Serializable {
     private String invoice;
 
     @Column(name = "updatedAt", nullable = false)
+    @Temporal(TemporalType.DATE)
     Date updatedAt = new Date();
 
     @Column(name = "createdAt", nullable = false)
+    @Temporal(TemporalType.DATE)
     Date createdAt = new Date();
 
 

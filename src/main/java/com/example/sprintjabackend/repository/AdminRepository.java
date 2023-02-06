@@ -35,4 +35,7 @@ public interface AdminRepository extends CrudRepository<User, Long> {
     @Query("select u.email from User u")
     List<String> findAllByRole(String role);
 
+    Page<User> findAllByRoleAndFirstNameContainingIgnoreCase(Pageable pageable, String role, String firstName);
+
+
 }

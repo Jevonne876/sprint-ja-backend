@@ -1,14 +1,17 @@
 package com.example.sprintjabackend.resource;
 
+import com.example.sprintjabackend.enums.Role;
 import com.example.sprintjabackend.exception.domain.*;
 import com.example.sprintjabackend.model.*;
 import com.example.sprintjabackend.model.Package;
+import com.example.sprintjabackend.repository.AdminRepository;
 import com.example.sprintjabackend.repository.UserRepository;
 import com.example.sprintjabackend.service.AdminService;
 import com.example.sprintjabackend.service.FileStore;
 import com.example.sprintjabackend.service.PackageService;
 import com.example.sprintjabackend.service.UserService;
 import com.example.sprintjabackend.service.implementation.EmailService;
+import com.example.sprintjabackend.service.implementation.ReportsGenerator;
 import com.example.sprintjabackend.utility.JwtTokenProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -24,7 +27,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.mail.MessagingException;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -47,9 +52,14 @@ public class AdminResource {
 
     private final FileStore fileStore;
 
+    private final ReportsGenerator reportsGenerator;
+    private final AdminRepository adminRepository;
+
+
     @Autowired
     public AdminResource(AdminService adminService, AuthenticationManager authenticationManager, JwtTokenProvider jwtTokenProvider,
-                         UserRepository userRepository, UserService userService, PackageService packageService, EmailService emailService, FileStore fileStore) {
+                         UserRepository userRepository, UserService userService, PackageService packageService, EmailService emailService, FileStore fileStore, ReportsGenerator reportsGenerator,
+                         AdminRepository adminRepository) {
         this.adminService = adminService;
         this.authenticationManager = authenticationManager;
         this.jwtTokenProvider = jwtTokenProvider;
@@ -58,6 +68,8 @@ public class AdminResource {
         this.packageService = packageService;
         this.emailService = emailService;
         this.fileStore = fileStore;
+        this.reportsGenerator = reportsGenerator;
+        this.adminRepository = adminRepository;
     }
 
     @PostMapping(value = "/admin/register-new-admin")
@@ -180,9 +192,9 @@ public class AdminResource {
     }
 
     @GetMapping(value = "/admin/get-all-users")
-    public ResponseEntity<Page<User>> getAllUsers(@RequestParam Optional<Integer> page) {
+    public ResponseEntity<Page<User>> getAllUsers(@RequestParam Optional<Integer> page, @RequestParam Optional<String> firstName) {
         Pageable pageable = PageRequest.of(page.orElse(0), 10);
-        return new ResponseEntity<>(userService.findAllByRole(pageable), OK);
+        return new ResponseEntity<>(userService.findAllByRoleAndFirstNameContainingIgnoreCaseOrderByLastNameAsc(pageable,firstName.orElse("")), OK);
     }
 
     @GetMapping(value = "/admin/get-all-admin-users")
@@ -192,9 +204,9 @@ public class AdminResource {
     }
 
     @GetMapping(value = "/admin/get-all-user-packages")
-    public ResponseEntity<Page<Package>> getAllUserPackages(@RequestParam Optional<Integer> page) {
+    public ResponseEntity<Page<Package>> getAllUserPackages(@RequestParam Optional<Integer> page, @RequestParam Optional<String> trackingNumber) {
         Pageable pageable = PageRequest.of(page.orElse(0), 10);
-        return new ResponseEntity<>(packageService.findAll(pageable), OK);
+        return new ResponseEntity<>(packageService.findAllByTrackingNumberContainingIgnoreCaseOrderByUpdatedAtAsc(pageable,trackingNumber.orElse("")), OK);
     }
 
     @GetMapping(value = "/admin/get-all-user-packages-not-shipped")
@@ -234,6 +246,35 @@ public class AdminResource {
         return new ResponseEntity<>(adminService.findAllEmails(), OK);
     }
 
+
+    @GetMapping("/admin/export-users")
+    public void generateExcelReport(HttpServletResponse response) throws Exception{
+
+        response.setContentType("application/octet-stream");
+
+        String headerKey = "Content-Disposition";
+        String headerValue = "attachment;filename=SprintJA-Customers.xls";
+
+        response.setHeader(headerKey, headerValue);
+
+        reportsGenerator.generateExcel(response);
+
+        response.flushBuffer();
+    }
+
+    @GetMapping("/admin/export-packages")
+    public void generateExcelReportPackages(HttpServletResponse response) throws Exception{
+
+        response.setContentType("application/octet-stream");
+
+        String headerKey = "Content-Disposition";
+        String headerValue = "attachment;filename=SprintJA-Packages.xls";
+
+        response.setHeader(headerKey, headerValue);
+
+        reportsGenerator.generateExcelPackages(response);
+        response.flushBuffer();
+    }
 
     @DeleteMapping("/admin/delete-user/{username}")
     public ResponseEntity<HttpResponse> deleteUser(@PathVariable("username") String username) throws IOException {
