@@ -37,7 +37,7 @@ public interface UserService {
 
     void resetPassword(String email) throws EmailNotFoundException, MessagingException;
 
-    Page<User> findAllByRole(Pageable pageable);
+    Page<User> findAllByRoleAndFirstNameContainingIgnoreCaseOrderByLastNameAsc(Pageable pageable,String firstName);
 
     public Page<User> findAllAdminByRole(Pageable pageable);
 

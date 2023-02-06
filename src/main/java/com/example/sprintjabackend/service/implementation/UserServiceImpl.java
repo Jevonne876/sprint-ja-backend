@@ -183,9 +183,10 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     }
 
+
     @Override
-    public Page<User> findAllByRole(Pageable pageable) {
-        return userRepository.findAllByRoleOrderByUpdatedAtDesc(pageable, Role.ROLE_USER.toString());
+    public Page<User> findAllByRoleAndFirstNameContainingIgnoreCaseOrderByLastNameAsc(Pageable pageable ,String firstName) {
+        return userRepository.findAllByRoleAndFirstNameContainingIgnoreCaseOrderByLastNameAsc(pageable,Role.ROLE_USER.toString(),firstName);
     }
 
     public Page<User> findAllAdminByRole(Pageable pageable){

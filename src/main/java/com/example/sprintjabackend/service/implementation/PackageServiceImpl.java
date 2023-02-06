@@ -168,6 +168,11 @@ public class PackageServiceImpl implements PackageService {
     }
 
     @Override
+    public Page<Package> findAllByTrackingNumberContainingIgnoreCaseOrderByUpdatedAtAsc(Pageable pageable, String trackingNumber) {
+        return packageRepository.findAllByTrackingNumberContainingIgnoreCaseOrderByUpdatedAtAsc(pageable,trackingNumber);
+    }
+
+    @Override
     public Package findByTrackingNumber(String trackingNumber) {
         return packageRepository.findByTrackingNumber(trackingNumber);
     }

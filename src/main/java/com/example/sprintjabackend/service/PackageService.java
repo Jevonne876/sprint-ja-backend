@@ -75,6 +75,8 @@ public interface PackageService {
 
     Page<Package> findAllDelivered(Pageable pageable);
 
+    Page<Package> findAllByTrackingNumberContainingIgnoreCaseOrderByUpdatedAtAsc(Pageable pageable, String trackingNumber);
+
     void deletePackage(String trackingNumber);
 
     Package update ( Package apackage);
