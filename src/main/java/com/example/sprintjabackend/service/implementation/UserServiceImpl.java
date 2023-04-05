@@ -103,29 +103,56 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     @Override
     public User updateUser(UUID userId, Long newTrn, String newFirstName, String newLastName,
-                           Date newDateOfBirth, String newEmail, String newPassword, String newPhoneNumber,
+                           String newEmail, String newPhoneNumber,
                            String newAddress1, String newAddress2, String newPickUpBranch)
             throws EmailExistException, TrnExistException, PhoneNumberException {
 
         User user = findUserByUserId(userId);
 
         if (user.getTrn().equals(newTrn) && user.getEmail().equals(newEmail) && user.getPhoneNumber().equals(newPhoneNumber)) {
+            user.setFirstName(newFirstName);
+            user.setLastName(newLastName);
+            user.setStreetAddress(newAddress1);
+            user.setParish(newAddress2);
+            user.setPickUpBranch(newPickUpBranch);
+            return this.userRepository.save(user);
+        } else if (!user.getTrn().equals(newTrn) && user.getEmail().equals(newEmail) && user.getPhoneNumber().equals(newPhoneNumber)) {
+            validateTrnAndEmail(newTrn, "", "");
             user.setTrn(newTrn);
             user.setFirstName(newFirstName);
             user.setLastName(newLastName);
-            user.setDateOfBirth(newDateOfBirth);
+            user.setPhoneNumber(newPhoneNumber);
+            user.setStreetAddress(newAddress1);
+            user.setParish(newAddress2);
+            user.setPickUpBranch(newPickUpBranch);
+            return this.userRepository.save(user);
+        } else if (user.getTrn().equals(newTrn) && !user.getEmail().equals(newEmail) && user.getPhoneNumber().equals(newPhoneNumber)) {
+            validateTrnAndEmail(000000000, newEmail, "");
+            user.setFirstName(newFirstName);
+            user.setLastName(newLastName);
+            user.setEmail(newEmail);
+            user.setUsername(newEmail);
+            user.setStreetAddress(newAddress1);
+            user.setParish(newAddress2);
+            user.setPickUpBranch(newPickUpBranch);
+            return this.userRepository.save(user);
+
+        } else if (user.getTrn().equals(newTrn) && user.getEmail().equals(newEmail) && !user.getPhoneNumber().equals(newPhoneNumber)) {
+            validateTrnAndEmail(000000000, "", newPhoneNumber);
+            user.setFirstName(newFirstName);
+            user.setLastName(newLastName);
+            user.setPhoneNumber(newPhoneNumber);
             user.setStreetAddress(newAddress1);
             user.setParish(newAddress2);
             user.setPickUpBranch(newPickUpBranch);
             return this.userRepository.save(user);
         } else {
-
             validateTrnAndEmail(newTrn, newEmail, newPhoneNumber);
             user.setTrn(newTrn);
             user.setFirstName(newFirstName);
             user.setLastName(newLastName);
-            user.setDateOfBirth(newDateOfBirth);
             user.setEmail(newEmail);
+            user.setUsername(newEmail);
             user.setPhoneNumber(newPhoneNumber);
             user.setStreetAddress(newAddress1);
             user.setParish(newAddress2);

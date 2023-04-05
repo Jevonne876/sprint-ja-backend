@@ -174,6 +174,7 @@ public class AdminResource {
     }
 
 
+
     @GetMapping(value = "/admin/view-package/{trackingNumber}")
     public ResponseEntity<Package> viewPackage(@PathVariable("trackingNumber") String trackingNumber) {
 
@@ -274,6 +275,23 @@ public class AdminResource {
 
         reportsGenerator.generateExcelPackages(response);
         response.flushBuffer();
+    }
+
+    @PutMapping(value = "/admin/update-user")
+    public ResponseEntity<User> updatedUser(@RequestParam UUID userId,
+                                            @RequestParam Long trn,
+                                            @RequestParam String newFirstName,
+                                            @RequestParam String newLastName,
+                                            @RequestParam String newEmail,
+                                            @RequestParam String newPhoneNumber,
+                                            @RequestParam String newAddress1,
+                                            @RequestParam String newAddress2,
+                                            @RequestParam String newPickUpBranch
+    ) throws TrnExistException, EmailExistException, PhoneNumberException {
+
+        return new ResponseEntity<>(userService.updateUser(userId, trn, newFirstName,
+                newLastName, newEmail,
+                newPhoneNumber, newAddress1, newAddress2, newPickUpBranch), OK);
     }
 
     @DeleteMapping("/admin/delete-user/{username}")

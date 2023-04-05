@@ -21,8 +21,8 @@ public interface UserService {
                   String email, String password, String phoneNumber,
                   String address1, String address2, String pickUpBranch) throws EmailExistException, TrnExistException, PhoneNumberException, MessagingException;
 
-    User updateUser(UUID userId, Long trn, String firstName, String lastName, Date dateOfBirth,
-                    String email, String password, String phoneNumber,
+    User updateUser(UUID userId, Long trn, String firstName, String lastName,
+                    String email, String phoneNumber,
                     String address1, String address2, String pickUpBranch) throws EmailExistException, TrnExistException, PhoneNumberException;
 
     User findUserByUsername(String username);
@@ -37,7 +37,7 @@ public interface UserService {
 
     void resetPassword(String email) throws EmailNotFoundException, MessagingException;
 
-    Page<User> findAllByRoleAndFirstNameContainingIgnoreCaseOrderByLastNameAsc(Pageable pageable,String firstName);
+    Page<User> findAllByRoleAndLastNameContainingIgnoreCaseOrderByCreatedAtDesc(Pageable pageable,String lastName);
 
     public Page<User> findAllAdminByRole(Pageable pageable);
 

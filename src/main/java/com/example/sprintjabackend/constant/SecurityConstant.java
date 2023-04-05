@@ -25,6 +25,8 @@ public class SecurityConstant {
             "/api/v1/admin/get-application-data",
             "/api/v1/admin/get-all-users",
             "/api/v1/admin/get-all-user",
+            "/api/v1/admin/view-user/**",
+            "/api/v1/admin/update-user",
             "/api/v1/admin/get-all-user-packages",
             "/api/v1/admin/get-all-user-packages-not-shipped",
             "/api/v1/admin/get-all-user-packages-shipped",

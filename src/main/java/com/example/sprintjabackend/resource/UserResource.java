@@ -54,9 +54,7 @@ public class UserResource {
                                             @RequestParam Long trn,
                                             @RequestParam String newFirstName,
                                             @RequestParam String newLastName,
-                                            @RequestParam Date newDateOfBirth,
                                             @RequestParam String newEmail,
-                                            @RequestParam String newPassword,
                                             @RequestParam String newPhoneNumber,
                                             @RequestParam String newAddress1,
                                             @RequestParam String newAddress2,
@@ -64,7 +62,7 @@ public class UserResource {
     ) throws TrnExistException, EmailExistException, PhoneNumberException {
 
         return new ResponseEntity<>(userService.updateUser(userId, trn, newFirstName,
-                newLastName, newDateOfBirth, newEmail, newPassword,
+                newLastName, newEmail,
                 newPhoneNumber, newAddress1, newAddress2, newPickUpBranch), OK);
     }
 
