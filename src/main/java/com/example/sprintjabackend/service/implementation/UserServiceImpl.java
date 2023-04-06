@@ -212,17 +212,18 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
 
     @Override
-    public Page<User> findAllByRoleAndFirstNameContainingIgnoreCaseOrderByLastNameAsc(Pageable pageable ,String firstName) {
-        return userRepository.findAllByRoleAndFirstNameContainingIgnoreCaseOrderByLastNameAsc(pageable,Role.ROLE_USER.toString(),firstName);
+    public Page<User> findAllByRoleAndLastNameContainingIgnoreCaseOrderByCreatedAtDesc(Pageable pageable, String lastName) {
+        return userRepository.findAllByRoleAndLastNameContainingIgnoreCaseOrderByCreatedAtDesc(pageable, Role.ROLE_USER.toString(), lastName);
     }
 
-    public Page<User> findAllAdminByRole(Pageable pageable){
-        return  userRepository.findAllByRoleOrderByUpdatedAtDesc(pageable,Role.ROLE_SUPER_ADMIN.toString());
+
+    public Page<User> findAllAdminByRole(Pageable pageable) {
+        return userRepository.findAllByRoleOrderByUpdatedAtDesc(pageable, Role.ROLE_SUPER_ADMIN.toString());
     }
 
 
     @Override
-    public void deleteUser(String username){
+    public void deleteUser(String username) {
         User user = userRepository.findUserByUsername(username);
         userRepository.deleteById(user.getId());
     }

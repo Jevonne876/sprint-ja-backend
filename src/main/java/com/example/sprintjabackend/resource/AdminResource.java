@@ -195,7 +195,7 @@ public class AdminResource {
     @GetMapping(value = "/admin/get-all-users")
     public ResponseEntity<Page<User>> getAllUsers(@RequestParam Optional<Integer> page, @RequestParam Optional<String> firstName) {
         Pageable pageable = PageRequest.of(page.orElse(0), 10);
-        return new ResponseEntity<>(userService.findAllByRoleAndFirstNameContainingIgnoreCaseOrderByLastNameAsc(pageable,firstName.orElse("")), OK);
+        return new ResponseEntity<>(userService.findAllByRoleAndLastNameContainingIgnoreCaseOrderByCreatedAtDesc(pageable,firstName.orElse("")), OK);
     }
 
     @GetMapping(value = "/admin/get-all-admin-users")
