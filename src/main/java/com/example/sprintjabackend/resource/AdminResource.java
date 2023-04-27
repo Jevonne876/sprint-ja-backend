@@ -207,7 +207,7 @@ public class AdminResource {
     @GetMapping(value = "/admin/get-all-user-packages")
     public ResponseEntity<Page<Package>> getAllUserPackages(@RequestParam Optional<Integer> page, @RequestParam Optional<String> trackingNumber) {
         Pageable pageable = PageRequest.of(page.orElse(0), 10);
-        return new ResponseEntity<>(packageService.findAllByTrackingNumberContainingIgnoreCaseOrderByUpdatedAtAsc(pageable,trackingNumber.orElse("")), OK);
+        return new ResponseEntity<>(packageService.findAllByTrackingNumberContainingIgnoreCaseOrderByUpdatedAtDesc(pageable,trackingNumber.orElse("")), OK);
     }
 
     @GetMapping(value = "/admin/get-all-user-packages-not-shipped")

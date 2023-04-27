@@ -67,7 +67,7 @@ public class PackageServiceImpl implements PackageService {
         aPackage.setLastName(user.getLastName());
         aPackage.setStatus(PackageStatus.NOT_SHIPPED.toString());
         packageRepository.save(aPackage);
-//        emailService.sendNewPackageEmail(user.getFirstName(), user.getLastName(), user.getTrn(), trackingNumber, courier, description, weight, cost);
+        emailService.sendNewPackageEmail(user.getFirstName(), user.getLastName(), user.getTrn(), trackingNumber, courier, description, weight, cost);
         return aPackage;
     }
 
@@ -135,31 +135,31 @@ public class PackageServiceImpl implements PackageService {
     @Override
     public Page<Package> findAll(Pageable pageable) {
 
-        return packageRepository.findAll(pageable);
+        return packageRepository.findAllByOrderByCreatedAtDesc(pageable);
     }
 
     @Override
     public Page<Package> findAllNotShipped(Pageable pageable) {
 
-        return packageRepository.findAllByStatus(pageable, PackageStatus.NOT_SHIPPED.toString());
+        return packageRepository.findAllByStatusOrderByCreatedAtDesc(pageable, PackageStatus.NOT_SHIPPED.toString());
     }
 
     @Override
     public Page<Package> findAllShipped(Pageable pageable) {
 
-        return packageRepository.findAllByStatus(pageable, PackageStatus.SHIPPED.toString());
+        return packageRepository.findAllByStatusOrderByCreatedAtDesc(pageable, PackageStatus.SHIPPED.toString());
     }
 
     @Override
     public Page<Package> findAllReadyForPickup(Pageable pageable) {
 
-        return packageRepository.findAllByStatus(pageable, PackageStatus.READY_FOR_PICKUP.name().toString());
+        return packageRepository.findAllByStatusOrderByCreatedAtDesc(pageable, PackageStatus.READY_FOR_PICKUP.name().toString());
     }
 
     @Override
     public Page<Package> findAllDelivered(Pageable pageable) {
 
-        return packageRepository.findAllByStatus(pageable, PackageStatus.DELIVERED.name().toString());
+        return packageRepository.findAllByStatusOrderByCreatedAtDesc(pageable, PackageStatus.DELIVERED.name().toString());
     }
 
     @Override
@@ -168,8 +168,8 @@ public class PackageServiceImpl implements PackageService {
     }
 
     @Override
-    public Page<Package> findAllByTrackingNumberContainingIgnoreCaseOrderByUpdatedAtAsc(Pageable pageable, String trackingNumber) {
-        return packageRepository.findAllByTrackingNumberContainingIgnoreCaseOrderByUpdatedAtAsc(pageable,trackingNumber);
+    public Page<Package> findAllByTrackingNumberContainingIgnoreCaseOrderByUpdatedAtDesc(Pageable pageable, String trackingNumber) {
+        return packageRepository.findAllByTrackingNumberContainingIgnoreCaseOrderByUpdatedAtDesc(pageable,trackingNumber);
     }
 
     @Override

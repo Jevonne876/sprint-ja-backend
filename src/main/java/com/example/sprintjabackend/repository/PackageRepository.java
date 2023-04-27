@@ -12,13 +12,13 @@ import java.util.UUID;
 public interface PackageRepository extends CrudRepository<Package, Long> {
 
 
-    Page<Package> findAll(Pageable pageable);
+    Page<Package> findAllByOrderByCreatedAtDesc(Pageable pageable);
 
-    Page<Package> findAllByTrackingNumberContainingIgnoreCaseOrderByUpdatedAtAsc(Pageable pageable, String trackingNumber);
+    Page<Package> findAllByTrackingNumberContainingIgnoreCaseOrderByUpdatedAtDesc(Pageable pageable, String trackingNumber);
 
     Page<Package> findAllPackageByUserId(UUID userId, Pageable pageable);
 
-    Page<Package> findAllByStatus(Pageable pageable, String status);
+    Page<Package> findAllByStatusOrderByCreatedAtDesc(Pageable pageable, String status);
 
     Package findByTrackingNumber(String trackingNumber);
 
