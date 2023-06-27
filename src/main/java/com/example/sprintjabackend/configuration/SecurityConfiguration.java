@@ -27,7 +27,7 @@ import static com.example.sprintjabackend.enums.Role.ROLE_SUPER_ADMIN;
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
-public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
+public class SecurityConfiguration  {
 
     private final JwtAuthorizationFilter jwtAuthorizationFilter;
 
@@ -58,12 +58,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         return auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder);
     }
 
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
-        http.requiresChannel()
-                .requestMatchers(r -> r.getHeader("X-Forwarded-Proto") != null)
-                .requiresSecure();
-    }
+
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
