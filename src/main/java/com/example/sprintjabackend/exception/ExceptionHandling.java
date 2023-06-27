@@ -11,16 +11,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.LockedException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.NoHandlerFoundException;
 
 import javax.persistence.NoResultException;
-import javax.sound.midi.Track;
 import java.io.IOException;
 import java.util.Objects;
 
@@ -131,5 +128,6 @@ public class ExceptionHandling implements ErrorController {
     public String getErrorPath() {
         return ERROR_PATH;
     }
+
 
 }

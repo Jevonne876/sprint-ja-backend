@@ -1,7 +1,5 @@
 package com.example.sprintjabackend.configuration;
 
-import com.example.sprintjabackend.constant.Authorities;
-import com.example.sprintjabackend.constant.SecurityConstant;
 import com.example.sprintjabackend.filter.JwtAccessDeniedFilter;
 import com.example.sprintjabackend.filter.JwtAuthenticationEntryPoint;
 import com.example.sprintjabackend.filter.JwtAuthorizationFilter;
@@ -21,7 +19,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import static com.example.sprintjabackend.constant.Authorities.SUPER_ADMIN_AUTHORITIES;
 import static com.example.sprintjabackend.constant.SecurityConstant.ADMIN_URLS;
 import static com.example.sprintjabackend.constant.SecurityConstant.PUBLIC_URLS;
 import static com.example.sprintjabackend.enums.Role.ROLE_SUPER_ADMIN;
@@ -87,4 +84,8 @@ public class SecurityConfiguration {
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
     }
+
+
+
+
 }
