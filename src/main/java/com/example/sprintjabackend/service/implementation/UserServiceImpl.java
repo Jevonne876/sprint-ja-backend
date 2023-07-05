@@ -117,7 +117,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
             user.setPickUpBranch(newPickUpBranch);
             return this.userRepository.save(user);
         } else if (!user.getTrn().equals(newTrn) && user.getEmail().equals(newEmail) && user.getPhoneNumber().equals(newPhoneNumber)) {
-            validateTrnAndEmail(newTrn, "", "");
+//            validateTrnAndEmail(newTrn, "", "");
             user.setTrn(newTrn);
             user.setFirstName(newFirstName);
             user.setLastName(newLastName);
@@ -127,7 +127,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
             user.setPickUpBranch(newPickUpBranch);
             return this.userRepository.save(user);
         } else if (user.getTrn().equals(newTrn) && !user.getEmail().equals(newEmail) && user.getPhoneNumber().equals(newPhoneNumber)) {
-            validateTrnAndEmail(000000000, newEmail, "");
+//            validateTrnAndEmail(000000000, newEmail, "");
             user.setFirstName(newFirstName);
             user.setLastName(newLastName);
             user.setEmail(newEmail);
@@ -138,7 +138,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
             return this.userRepository.save(user);
 
         } else if (user.getTrn().equals(newTrn) && user.getEmail().equals(newEmail) && !user.getPhoneNumber().equals(newPhoneNumber)) {
-            validateTrnAndEmail(000000000, "", newPhoneNumber);
+//            validateTrnAndEmail(000000000, "", newPhoneNumber);
             user.setFirstName(newFirstName);
             user.setLastName(newLastName);
             user.setPhoneNumber(newPhoneNumber);
@@ -147,7 +147,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
             user.setPickUpBranch(newPickUpBranch);
             return this.userRepository.save(user);
         } else {
-            validateTrnAndEmail(newTrn, newEmail, newPhoneNumber);
+//            validateTrnAndEmail(newTrn, newEmail, newPhoneNumber);
             user.setTrn(newTrn);
             user.setFirstName(newFirstName);
             user.setLastName(newLastName);
