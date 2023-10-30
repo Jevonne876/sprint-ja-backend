@@ -27,7 +27,7 @@ public class SprintjaBackendApplication {
     public UrlBasedCorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowCredentials(true);
-        configuration.setAllowedOrigins(Arrays.asList("https://www.sprintja.com", "http://www.sprintja.com"));
+        configuration.setAllowedOrigins(Arrays.asList("https://www.sprintja.com"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("Origin", "Accept", "X-Requested-With",
                 "Access-Control-Allow-Origin", "Content-Type", "Jwt-Token", "Authorization",
