@@ -304,7 +304,7 @@ public class AdminResource {
     public ResponseEntity<HttpResponse> deletePackage(@PathVariable("trackingNumber") String trackingNumber) throws IOException {
 
         packageService.deletePackage(trackingNumber);
-        return response(OK, "User Deleted Successfully");
+        return response(OK, "Package Deleted Successfully");
     }
 
 
