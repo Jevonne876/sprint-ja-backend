@@ -72,6 +72,9 @@ public class User implements Serializable {
     @Column(name = "createdAt", nullable = false)
     Date createdAt = new Date();
 
+    public User(){
+
+    }
     public User(UUID userId, Long trn, String firstName, String lastName,
                 Date dateOfBirth, String username, String email, String password,
                 String phoneNumber, String streetAddress, String parish, String pickUpBranch,
@@ -131,4 +134,6 @@ public class User implements Serializable {
     public Long getId() {
         return id;
     }
+
+
 }

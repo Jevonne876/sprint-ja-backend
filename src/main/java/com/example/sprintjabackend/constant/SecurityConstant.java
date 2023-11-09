@@ -4,6 +4,8 @@ public class SecurityConstant {
 
     //token expiration time in millisecond = 24 hours
     public static final long TOKEN_EXPIRATION_TIME = 86_400_000;
+
+    public static final long RESET_PASSWORD_TOKEN_EXPIRATION_TIME = 300000;
     public static final String TOKEN_PREFIX = "Bearer ";
 
     public static final String JWT_TOKEN_HEADER = "Jwt-Token";

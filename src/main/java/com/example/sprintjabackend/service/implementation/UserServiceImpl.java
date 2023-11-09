@@ -5,13 +5,11 @@ import com.example.sprintjabackend.exception.domain.EmailExistException;
 import com.example.sprintjabackend.exception.domain.EmailNotFoundException;
 import com.example.sprintjabackend.exception.domain.PhoneNumberException;
 import com.example.sprintjabackend.exception.domain.TrnExistException;
-import com.example.sprintjabackend.model.Package;
 import com.example.sprintjabackend.model.User;
 import com.example.sprintjabackend.model.UserPrincipal;
 import com.example.sprintjabackend.repository.UserRepository;
 import com.example.sprintjabackend.service.UserService;
 import org.apache.commons.lang3.RandomStringUtils;
-import org.apache.tomcat.util.http.fileupload.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
@@ -24,13 +22,7 @@ import org.springframework.stereotype.Service;
 
 import javax.mail.MessagingException;
 import javax.transaction.Transactional;
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Date;
-import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 import static com.example.sprintjabackend.constant.UserImplementationConstant.*;
@@ -78,7 +70,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
-    public User addNewUserFromAdmin( Long trn,
+    public User addNewUserFromAdmin(Long trn,
                                     String firstName, String lastName,
                                     Date dateOfBirth, String email, String phoneNumber,
                                     String streetAddress, String parish,
@@ -97,7 +89,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         newUser.setParish("");
         newUser.setPickUpBranch("");
         this.userRepository.save(newUser);
-        this.emailService.sendNewAccountPassword(firstName,lastName,password,email);
+        this.emailService.sendNewAccountPassword(firstName, lastName, password, email);
         return null;
     }
 
@@ -117,7 +109,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
             user.setPickUpBranch(newPickUpBranch);
             return this.userRepository.save(user);
         } else if (!user.getTrn().equals(newTrn) && user.getEmail().equals(newEmail) && user.getPhoneNumber().equals(newPhoneNumber)) {
-//            validateTrnAndEmail(newTrn, "", "");
+
             user.setTrn(newTrn);
             user.setFirstName(newFirstName);
             user.setLastName(newLastName);
@@ -127,7 +119,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
             user.setPickUpBranch(newPickUpBranch);
             return this.userRepository.save(user);
         } else if (user.getTrn().equals(newTrn) && !user.getEmail().equals(newEmail) && user.getPhoneNumber().equals(newPhoneNumber)) {
-//            validateTrnAndEmail(000000000, newEmail, "");
+
             user.setFirstName(newFirstName);
             user.setLastName(newLastName);
             user.setEmail(newEmail);
@@ -138,7 +130,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
             return this.userRepository.save(user);
 
         } else if (user.getTrn().equals(newTrn) && user.getEmail().equals(newEmail) && !user.getPhoneNumber().equals(newPhoneNumber)) {
-//            validateTrnAndEmail(000000000, "", newPhoneNumber);
+
             user.setFirstName(newFirstName);
             user.setLastName(newLastName);
             user.setPhoneNumber(newPhoneNumber);
@@ -147,7 +139,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
             user.setPickUpBranch(newPickUpBranch);
             return this.userRepository.save(user);
         } else {
-//            validateTrnAndEmail(newTrn, newEmail, newPhoneNumber);
+
             user.setTrn(newTrn);
             user.setFirstName(newFirstName);
             user.setLastName(newLastName);
@@ -210,6 +202,17 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     }
 
+    @Override
+    public Boolean passwordReset(String email) throws EmailNotFoundException {
+        User user = userRepository.findUserByEmail(email);
+        if (user != null) {
+            return true;
+        }
+
+        return false;
+
+    }
+
 
     @Override
     public Page<User> findAllByRoleAndLastNameContainingIgnoreCaseOrderByCreatedAtDesc(Pageable pageable, String lastName) {
@@ -227,7 +230,6 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         User user = userRepository.findUserByUsername(username);
         userRepository.deleteById(user.getId());
     }
-
 
 
     private void validateTrnAndEmail(long newTrn, String newEmail, String newPhoneNumber) throws TrnExistException, EmailExistException, PhoneNumberException {

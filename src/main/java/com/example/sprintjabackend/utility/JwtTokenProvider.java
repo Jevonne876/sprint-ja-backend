@@ -31,7 +31,7 @@ public class JwtTokenProvider {
     private String secret;
 
     //method to create user token below
-    public String generateJwtToken(UserPrincipal userPrincipal) {
+    public String generateJwtToken(UserPrincipal userPrincipal, long TOKEN_EXPIRATION_TIME) {
         String[] claims = getClaimsFromUser(userPrincipal);
         return JWT.create().withIssuer(SPRINT_JA)
                 .withAudience(SPRINT_JA_ADMINISTRATION)

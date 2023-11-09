@@ -35,6 +35,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static com.example.sprintjabackend.constant.SecurityConstant.JWT_TOKEN_HEADER;
+import static com.example.sprintjabackend.constant.SecurityConstant.TOKEN_EXPIRATION_TIME;
 import static java.nio.file.Paths.get;
 import static org.springframework.http.HttpStatus.OK;
 
@@ -74,7 +75,7 @@ public class AdminResource {
 
     @PostMapping(value = "/admin/register-new-admin")
     public ResponseEntity<User> registerNewAdmin(@RequestBody User user) throws UsernameExistException {
-        User newAdminUser = new User();
+        User newAdminUser;
         newAdminUser = adminService.registerNewAdmin(user.getFirstName(), user.getLastName(), user.getUsername(), user.getPassword());
         return new ResponseEntity<>(newAdminUser, HttpStatus.OK);
     }
@@ -82,7 +83,7 @@ public class AdminResource {
     @PostMapping(value = "/admin/admin-login")
     public ResponseEntity<User> adminLogin(@RequestBody User user) {
         authenticate(user.getEmail(), user.getPassword());
-        User loggedInUser = new User();
+        User loggedInUser;
         loggedInUser = adminService.findAdminByUsername(user.getEmail());
         UserPrincipal userPrincipal = new UserPrincipal(loggedInUser);
         HttpHeaders httpHeaders = getJwtHeader(userPrincipal);
@@ -91,7 +92,7 @@ public class AdminResource {
 
     @PostMapping(value = "/admin/register-new-user")
     public ResponseEntity<User> registerNewUser(@RequestBody User user) throws PhoneNumberException, EmailExistException, MessagingException, TrnExistException {
-        User newUser = new User();
+        User newUser;
 
 
         newUser = userService.addNewUserFromAdmin(user.getTrn(),
@@ -314,7 +315,7 @@ public class AdminResource {
 
     private HttpHeaders getJwtHeader(UserPrincipal user) {
         HttpHeaders headers = new HttpHeaders();
-        headers.add(JWT_TOKEN_HEADER, jwtTokenProvider.generateJwtToken(user));
+        headers.add(JWT_TOKEN_HEADER, jwtTokenProvider.generateJwtToken(user,TOKEN_EXPIRATION_TIME));
         return headers;
     }
 

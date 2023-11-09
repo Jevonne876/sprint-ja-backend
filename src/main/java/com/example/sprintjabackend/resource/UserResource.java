@@ -22,6 +22,7 @@ import java.util.Date;
 import java.util.UUID;
 
 import static com.example.sprintjabackend.constant.SecurityConstant.JWT_TOKEN_HEADER;
+import static com.example.sprintjabackend.constant.SecurityConstant.TOKEN_EXPIRATION_TIME;
 import static org.springframework.http.HttpStatus.OK;
 
 @RestController
@@ -90,7 +91,7 @@ public class UserResource {
 
     private HttpHeaders getJwtHeader(UserPrincipal user) {
         HttpHeaders headers = new HttpHeaders();
-        headers.add(JWT_TOKEN_HEADER, jwtTokenProvider.generateJwtToken(user));
+        headers.add(JWT_TOKEN_HEADER, jwtTokenProvider.generateJwtToken(user,TOKEN_EXPIRATION_TIME));
         return headers;
     }
 
