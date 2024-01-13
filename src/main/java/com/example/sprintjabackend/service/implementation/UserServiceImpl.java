@@ -59,7 +59,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
                          Date dateOfBirth, String email, String password, String phoneNumber,
                          String streetAddress, String parish, String pickUpBranch) throws PhoneNumberException, EmailExistException, TrnExistException, MessagingException {
 
-        validateTrnAndEmail(trn, email, phoneNumber);
+    //    validateTrnAndEmail(trn, email, phoneNumber);
         User newUser = new User();
         newUser.setTrn(trn);
         newUser.setFirstName(firstName);
