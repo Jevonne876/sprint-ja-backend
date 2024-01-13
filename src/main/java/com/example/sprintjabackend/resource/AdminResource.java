@@ -35,6 +35,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static com.example.sprintjabackend.constant.SecurityConstant.JWT_TOKEN_HEADER;
+import static com.example.sprintjabackend.constant.SecurityConstant.TOKEN_EXPIRATION_TIME;
 import static java.nio.file.Paths.get;
 import static org.springframework.http.HttpStatus.OK;
 
@@ -314,7 +315,7 @@ public class AdminResource {
 
     private HttpHeaders getJwtHeader(UserPrincipal user) {
         HttpHeaders headers = new HttpHeaders();
-        headers.add(JWT_TOKEN_HEADER, jwtTokenProvider.generateJwtToken(user));
+        headers.add(JWT_TOKEN_HEADER, jwtTokenProvider.generateJwtToken(user,TOKEN_EXPIRATION_TIME));
         return headers;
     }
 

@@ -46,11 +46,14 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     private final EmailService emailService;
 
+    private final JwtTokenProvider jwtTokenProvider;
+
     @Autowired
-    public UserServiceImpl(UserRepository userRepository, BCryptPasswordEncoder encoder, EmailService emailService) {
+    public UserServiceImpl(UserRepository userRepository, BCryptPasswordEncoder encoder, EmailService emailService, JwtTokenProvider jwtTokenProvider) {
         this.userRepository = userRepository;
         this.encoder = encoder;
         this.emailService = emailService;
+        this.jwtTokenProvider = jwtTokenProvider;
     }
 
 
@@ -198,15 +201,38 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
-    public void resetPassword(String email) throws EmailNotFoundException, MessagingException {
+    public Token forgotPassword(String email) throws EmailNotFoundException, MessagingException {
         User user = userRepository.findUserByEmail(email);
+
         if (user == null) {
             throw new EmailNotFoundException(NO_USER_FOUND_BY_EMAIL + email);
         }
-        String password = generatePassword();
-        user.setPassword(encoder.encode(password));
+
+        UserPrincipal userPrincipal = new UserPrincipal(user);
+        Token token = new Token();
+        token.setToken(jwtTokenProvider.generateJwtToken(userPrincipal, RESET_PASSWORD_TOKEN_EXPIRATION_TIME));
+        return token;
+    }
+
+
+    @Override
+    public Boolean resetPassword(String email, String newPassword) {
+
+        User user = userRepository.findUserByEmail(email);
+
+        user.setPassword(encoder.encode(newPassword));
         userRepository.save(user);
-        this.emailService.sendNewPasswordEmail(user.getFirstName(), password, user.getEmail());
+        return true;
+    }
+
+    @Override
+    public Boolean passwordReset(String email) throws EmailNotFoundException {
+        User user = userRepository.findUserByEmail(email);
+        if (user != null) {
+            return true;
+        }
+
+        return false;
 
     }
 

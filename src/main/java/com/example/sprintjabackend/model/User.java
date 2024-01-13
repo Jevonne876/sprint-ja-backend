@@ -69,9 +69,9 @@ public class User implements Serializable {
     @Column(name = "createdAt", nullable = false)
     Date createdAt = new Date();
 
-    public User() {
-    }
+    public User(){
 
+    }
     public User(UUID userId, Long trn, String firstName, String lastName,
                 Date dateOfBirth, String username, String email, String password,
                 String phoneNumber, String streetAddress, String parish, String pickUpBranch,
@@ -130,10 +130,6 @@ public class User implements Serializable {
     @JsonProperty(value = "id")
     public Long getId() {
         return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public UUID getUserId() {
@@ -259,7 +255,6 @@ public class User implements Serializable {
     public void setNotLocked(boolean notLocked) {
         isNotLocked = notLocked;
     }
-
     public Date getUpdatedAt() {
         return updatedAt;
     }
