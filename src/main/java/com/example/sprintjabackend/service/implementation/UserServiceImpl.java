@@ -5,13 +5,13 @@ import com.example.sprintjabackend.exception.domain.EmailExistException;
 import com.example.sprintjabackend.exception.domain.EmailNotFoundException;
 import com.example.sprintjabackend.exception.domain.PhoneNumberException;
 import com.example.sprintjabackend.exception.domain.TrnExistException;
-import com.example.sprintjabackend.model.Package;
+import com.example.sprintjabackend.model.Token;
 import com.example.sprintjabackend.model.User;
 import com.example.sprintjabackend.model.UserPrincipal;
 import com.example.sprintjabackend.repository.UserRepository;
 import com.example.sprintjabackend.service.UserService;
+import com.example.sprintjabackend.utility.JwtTokenProvider;
 import org.apache.commons.lang3.RandomStringUtils;
-import org.apache.tomcat.util.http.fileupload.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
@@ -120,7 +120,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
             user.setPickUpBranch(newPickUpBranch);
             return this.userRepository.save(user);
         } else if (!user.getTrn().equals(newTrn) && user.getEmail().equals(newEmail) && user.getPhoneNumber().equals(newPhoneNumber)) {
-//            validateTrnAndEmail(newTrn, "", "");
+
             user.setTrn(newTrn);
             user.setFirstName(newFirstName);
             user.setLastName(newLastName);
@@ -130,7 +130,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
             user.setPickUpBranch(newPickUpBranch);
             return this.userRepository.save(user);
         } else if (user.getTrn().equals(newTrn) && !user.getEmail().equals(newEmail) && user.getPhoneNumber().equals(newPhoneNumber)) {
-//            validateTrnAndEmail(000000000, newEmail, "");
+
             user.setFirstName(newFirstName);
             user.setLastName(newLastName);
             user.setEmail(newEmail);
@@ -141,7 +141,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
             return this.userRepository.save(user);
 
         } else if (user.getTrn().equals(newTrn) && user.getEmail().equals(newEmail) && !user.getPhoneNumber().equals(newPhoneNumber)) {
-//            validateTrnAndEmail(000000000, "", newPhoneNumber);
+
             user.setFirstName(newFirstName);
             user.setLastName(newLastName);
             user.setPhoneNumber(newPhoneNumber);
@@ -150,7 +150,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
             user.setPickUpBranch(newPickUpBranch);
             return this.userRepository.save(user);
         } else {
-//            validateTrnAndEmail(newTrn, newEmail, newPhoneNumber);
+
             user.setTrn(newTrn);
             user.setFirstName(newFirstName);
             user.setLastName(newLastName);
