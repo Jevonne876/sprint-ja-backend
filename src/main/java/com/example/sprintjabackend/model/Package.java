@@ -70,8 +70,8 @@ public class Package implements Serializable {
     @Temporal(TemporalType.DATE)
     Date createdAt = new Date();
 
-    public Package() {
 
+    public Package() {
     }
 
     public Package(UUID packageId, String trackingNumber, String courier, String description,
