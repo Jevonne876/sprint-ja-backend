@@ -5,10 +5,12 @@ import com.example.sprintjabackend.exception.domain.EmailExistException;
 import com.example.sprintjabackend.exception.domain.EmailNotFoundException;
 import com.example.sprintjabackend.exception.domain.PhoneNumberException;
 import com.example.sprintjabackend.exception.domain.TrnExistException;
+import com.example.sprintjabackend.model.Token;
 import com.example.sprintjabackend.model.User;
 import com.example.sprintjabackend.model.UserPrincipal;
 import com.example.sprintjabackend.repository.UserRepository;
 import com.example.sprintjabackend.service.UserService;
+import com.example.sprintjabackend.utility.JwtTokenProvider;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -25,6 +27,7 @@ import javax.transaction.Transactional;
 import java.util.Date;
 import java.util.UUID;
 
+import static com.example.sprintjabackend.constant.SecurityConstant.RESET_PASSWORD_TOKEN_EXPIRATION_TIME;
 import static com.example.sprintjabackend.constant.UserImplementationConstant.*;
 
 @Service
@@ -38,11 +41,14 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     private final EmailService emailService;
 
+    private final JwtTokenProvider jwtTokenProvider;
+
     @Autowired
-    public UserServiceImpl(UserRepository userRepository, BCryptPasswordEncoder encoder, EmailService emailService) {
+    public UserServiceImpl(UserRepository userRepository, BCryptPasswordEncoder encoder, EmailService emailService, JwtTokenProvider jwtTokenProvider) {
         this.userRepository = userRepository;
         this.encoder = encoder;
         this.emailService = emailService;
+        this.jwtTokenProvider = jwtTokenProvider;
     }
 
 
@@ -190,16 +196,28 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
-    public void resetPassword(String email) throws EmailNotFoundException, MessagingException {
+    public Token forgotPassword(String email) throws EmailNotFoundException, MessagingException {
         User user = userRepository.findUserByEmail(email);
+
         if (user == null) {
             throw new EmailNotFoundException(NO_USER_FOUND_BY_EMAIL + email);
         }
-        String password = generatePassword();
-        user.setPassword(encoder.encode(password));
-        userRepository.save(user);
-        this.emailService.sendNewPasswordEmail(user.getFirstName(), password, user.getEmail());
 
+        UserPrincipal userPrincipal = new UserPrincipal(user);
+        Token token = new Token();
+        token.setToken(jwtTokenProvider.generateJwtToken(userPrincipal, RESET_PASSWORD_TOKEN_EXPIRATION_TIME));
+        return token;
+    }
+
+
+    @Override
+    public Boolean resetPassword(String email, String newPassword) {
+
+        User user = userRepository.findUserByEmail(email);
+
+        user.setPassword(encoder.encode(newPassword));
+        userRepository.save(user);
+        return true;
     }
 
     @Override

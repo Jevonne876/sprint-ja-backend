@@ -5,6 +5,7 @@ public class SecurityConstant {
     //token expiration time in millisecond = 24 hours
     public static final long TOKEN_EXPIRATION_TIME = 86_400_000;
 
+    //token expiration time in millisecond = 5 mins
     public static final long RESET_PASSWORD_TOKEN_EXPIRATION_TIME = 300000;
     public static final String TOKEN_PREFIX = "Bearer ";
 
@@ -19,7 +20,7 @@ public class SecurityConstant {
     public static final String OPTIONS_HTTP_METHOD = "OPTIONS";
     public static final String[] ADMIN_URLS = {"/admin/login", "/admin/sign-up", "/admin/dashboard"};
     public static final String[] PUBLIC_URLS = {"/api/v1/register-new-user",
-            "/api/v1/user-login","/api/v1/reset-password/**",
+            "/api/v1/user-login", "/api/v1/test", "/api/v1/forgot-password",
             "/api/v1/send-query/**",
             "/api/v1/admin/admin-login",
             "/api/v1/admin/register-new-admin",
@@ -48,8 +49,8 @@ public class SecurityConstant {
             "/api/v1/admin/file-upload/**",
             "/api/v1/invoice-download/**",
             "/api/v1/admin/export-users",
-            "/api/v1/admin/export-packages"
-            };
+            "/api/v1/admin/export-packages",
+    };
 
 
 }

@@ -5,6 +5,7 @@ import com.example.sprintjabackend.exception.domain.EmailNotFoundException;
 import com.example.sprintjabackend.exception.domain.PhoneNumberException;
 import com.example.sprintjabackend.exception.domain.TrnExistException;
 import com.example.sprintjabackend.model.HttpResponse;
+import com.example.sprintjabackend.model.Token;
 import com.example.sprintjabackend.model.User;
 import com.example.sprintjabackend.model.UserPrincipal;
 import com.example.sprintjabackend.service.UserService;
@@ -78,11 +79,16 @@ public class UserResource {
     }
 
 
+    @PostMapping("/forgot-password")
+    public ResponseEntity<Token> resetPassword(@RequestParam("email") String email) throws MessagingException, EmailNotFoundException {
 
-    @GetMapping("/reset-password/{email}")
-    public ResponseEntity<HttpResponse> resetPassword(@PathVariable("email") String email) throws MessagingException, EmailNotFoundException {
-        userService.resetPassword(email);
-        return response(OK, "" + email);
+        return new ResponseEntity<>(userService.forgotPassword(email), OK);
+    }
+
+    @PutMapping("/reset-password")
+    ResponseEntity<Boolean> resetPassword(@RequestParam("email") String email, @RequestParam("password") String password) {
+
+        return new ResponseEntity<>(userService.resetPassword(email, password), OK);
     }
 
     private void authenticate(String username, String password) {
@@ -91,7 +97,7 @@ public class UserResource {
 
     private HttpHeaders getJwtHeader(UserPrincipal user) {
         HttpHeaders headers = new HttpHeaders();
-        headers.add(JWT_TOKEN_HEADER, jwtTokenProvider.generateJwtToken(user,TOKEN_EXPIRATION_TIME));
+        headers.add(JWT_TOKEN_HEADER, jwtTokenProvider.generateJwtToken(user, TOKEN_EXPIRATION_TIME));
         return headers;
     }
 

@@ -1,12 +1,16 @@
 package com.example.sprintjabackend.service.implementation;
 
+import com.example.sprintjabackend.model.User;
+import com.example.sprintjabackend.model.UserPrincipal;
+import com.example.sprintjabackend.repository.UserRepository;
+import com.example.sprintjabackend.utility.JwtTokenProvider;
 import com.sun.mail.smtp.SMTPTransport;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Session;
-import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import java.util.Date;
@@ -19,6 +23,14 @@ import static javax.mail.Message.RecipientType.TO;
 
 @Service
 public class EmailService {
+
+    private final UserRepository userRepository;
+    private final JwtTokenProvider jwtTokenProvider;
+
+    public EmailService(UserRepository userRepository, JwtTokenProvider jwtTokenProvider) {
+        this.userRepository = userRepository;
+        this.jwtTokenProvider = jwtTokenProvider;
+    }
 
     public void newUserEmail(String firstName, String email) throws MessagingException {
         Message message = createEmail(firstName, email);
@@ -61,6 +73,18 @@ public class EmailService {
         smtpTransport.close();
     }
 
+//    public String sendPasswordResetLink(String email) throws MessagingException {
+//        User user = userRepository.findUserByEmail(email);
+//        String link = "http://localhost:4200/#/password-reset";
+//        if (user != null) {
+//            UserPrincipal userPrincipal = new UserPrincipal(user);
+//            String token = jwtTokenProvider.generateJwtToken(userPrincipal, 300000);
+//            Message message = sendEmail(email, "Password Reset Link", "Dear, " + user.getFirstName() + ".\n\n Please use link :" +);
+//        } else {
+//            throw new UsernameNotFoundException("Not User found by email " + user.getEmail());
+//        }
+//    }
+
     public void sendMessage(String recipient, String subject, String text) throws MessagingException {
         Message message = sendEmail(recipient, subject, text);
         SMTPTransport smtpTransport = (SMTPTransport) getEmailSession().getTransport(SIMPLE_MAIL_TRANSFER_PROTOCOL);
@@ -78,8 +102,9 @@ public class EmailService {
             smtpTransport.close();
         }
     }
+
     public void sendPackageStatusUpdateEmail(String firstName, String lastName, String trackingNumber, String status, String email) throws MessagingException {
-        Message message = createEmail(firstName,lastName,trackingNumber,status,email);
+        Message message = createEmail(firstName, lastName, trackingNumber, status, email);
         SMTPTransport smtpTransport = (SMTPTransport) getEmailSession().getTransport(SIMPLE_MAIL_TRANSFER_PROTOCOL);
         smtpTransport.connect(GMAIL_SMTP_SERVER, USERNAME, PASSWORD);
         smtpTransport.sendMessage(message, message.getAllRecipients());
@@ -98,7 +123,6 @@ public class EmailService {
         message.saveChanges();
         return message;
     }
-
 
 
     private Message createEmail(String firstName, String email) throws MessagingException {
@@ -182,6 +206,7 @@ public class EmailService {
         return message;
 
     }
+
 
     private Message sendBroadCastEmail(String email, String subject, String text) throws MessagingException {
         Message message = new MimeMessage(getEmailSession());

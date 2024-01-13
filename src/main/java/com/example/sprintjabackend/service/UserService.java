@@ -4,6 +4,7 @@ import com.example.sprintjabackend.exception.domain.EmailExistException;
 import com.example.sprintjabackend.exception.domain.EmailNotFoundException;
 import com.example.sprintjabackend.exception.domain.PhoneNumberException;
 import com.example.sprintjabackend.exception.domain.TrnExistException;
+import com.example.sprintjabackend.model.Token;
 import com.example.sprintjabackend.model.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -35,7 +36,9 @@ public interface UserService {
 
     User findUserByUserId(UUID userId);
 
-    void resetPassword(String email) throws EmailNotFoundException, MessagingException;
+    Token forgotPassword(String email) throws EmailNotFoundException, MessagingException;
+
+    Boolean resetPassword(String email,String newPassword);
 
     Boolean passwordReset(String email) throws EmailNotFoundException;
 
