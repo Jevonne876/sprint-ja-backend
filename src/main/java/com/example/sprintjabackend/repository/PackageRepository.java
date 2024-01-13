@@ -1,5 +1,6 @@
 package com.example.sprintjabackend.repository;
 
+import com.example.sprintjabackend.enums.PackageStatus;
 import com.example.sprintjabackend.model.Package;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -11,7 +12,6 @@ import java.util.UUID;
 
 public interface PackageRepository extends CrudRepository<Package, Long> {
 
-
     Page<Package> findAllByOrderByCreatedAtDesc(Pageable pageable);
 
     Page<Package> findAllByTrackingNumberContainingIgnoreCaseOrderByUpdatedAtDesc(Pageable pageable, String trackingNumber);
@@ -20,6 +20,8 @@ public interface PackageRepository extends CrudRepository<Package, Long> {
 
     Page<Package> findAllByStatusOrderByCreatedAtDesc(Pageable pageable, String status);
 
+    Page<Package> findAllByStatusInOrderByCreatedAtDesc(Pageable pageable, List<String> statuses);
+
     Package findByTrackingNumber(String trackingNumber);
 
     Long countByUserIdAndStatus(UUID userId, String status);
@@ -27,7 +29,7 @@ public interface PackageRepository extends CrudRepository<Package, Long> {
     Long countByStatus(String Status);
 
 
-    Page<Package> findAllByUserIdAndStatusOrderByUpdatedAtDesc(UUID userId,String status, Pageable pageable);
+    Page<Package> findAllByUserIdAndStatusOrderByUpdatedAtDesc(UUID userId, String status, Pageable pageable);
 
     List<Package> findAllByUserIdAndStatusOrderByCreatedAtDesc(UUID uuid, String status);
 

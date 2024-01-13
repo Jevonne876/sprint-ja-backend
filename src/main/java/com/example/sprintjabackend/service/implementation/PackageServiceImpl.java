@@ -19,9 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.mail.MessagingException;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 import static com.example.sprintjabackend.constant.PackageConstant.TRACKING_NUMBER_FOUND;
 import static java.nio.file.Paths.get;
@@ -50,7 +48,9 @@ public class PackageServiceImpl implements PackageService {
     }
 
     @Override
-    public Package addNewPackage(String trackingNumber, String courier, String description, double weight, double cost, UUID userId, MultipartFile file) throws TrackingNumberException, MessagingException, IOException {
+    public Package addNewPackage(String trackingNumber, String courier, String description, double weight,
+                                 double cost, UUID userId, MultipartFile file)
+            throws TrackingNumberException, MessagingException, IOException {
         User user = userService.findUserByUserId(userId);
         //saves the file first in order to get filename
         validateTrackingNumber(trackingNumber);
@@ -72,7 +72,10 @@ public class PackageServiceImpl implements PackageService {
     }
 
     @Override
-    public Package addNewPackage(String trackingNumber, String courier, String description, String status, double weight, double cost, UUID userId, MultipartFile file) throws TrackingNumberException, MessagingException, IOException {
+    public Package addNewPackage(String trackingNumber, String courier, String description,
+                                 String status, double weight,
+                                 double cost, UUID userId,
+                                 MultipartFile file) throws TrackingNumberException, MessagingException, IOException {
         User user = userService.findUserByUserId(userId);
         //saves the file first in order to get filename
         validateTrackingNumber(trackingNumber);
@@ -94,7 +97,8 @@ public class PackageServiceImpl implements PackageService {
 
     @Override
     public Package updatePackage(String oldTrackingNumber, String trackingNumber, String courier,
-                                 String description, double weight, double cost, UUID userId) throws TrackingNumberException {
+                                 String description, double weight,
+                                 double cost, UUID userId) throws TrackingNumberException {
 
         Package getPackageToBeUpdated = new Package();
         User user = userService.findUserByUserId(userId);
@@ -141,13 +145,17 @@ public class PackageServiceImpl implements PackageService {
     @Override
     public Page<Package> findAllNotShipped(Pageable pageable) {
 
-        return packageRepository.findAllByStatusOrderByCreatedAtDesc(pageable, PackageStatus.NOT_SHIPPED.toString());
+        List<String> statusList = Arrays.asList(PackageStatus.NOT_SHIPPED.toString(), PackageStatus.AT_WAREHOUSE.toString());
+
+        return packageRepository.findAllByStatusInOrderByCreatedAtDesc(pageable, statusList);
+
     }
 
     @Override
     public Page<Package> findAllShipped(Pageable pageable) {
 
-        return packageRepository.findAllByStatusOrderByCreatedAtDesc(pageable, PackageStatus.SHIPPED.toString());
+        List<String> statusList = Arrays.asList(PackageStatus.AT_CUSTOMS.toString(), PackageStatus.SHIPPED.toString());
+        return packageRepository.findAllByStatusInOrderByCreatedAtDesc(pageable, statusList);
     }
 
     @Override
@@ -169,7 +177,7 @@ public class PackageServiceImpl implements PackageService {
 
     @Override
     public Page<Package> findAllByTrackingNumberContainingIgnoreCaseOrderByUpdatedAtDesc(Pageable pageable, String trackingNumber) {
-        return packageRepository.findAllByTrackingNumberContainingIgnoreCaseOrderByUpdatedAtDesc(pageable,trackingNumber);
+        return packageRepository.findAllByTrackingNumberContainingIgnoreCaseOrderByUpdatedAtDesc(pageable, trackingNumber);
     }
 
     @Override
@@ -198,12 +206,17 @@ public class PackageServiceImpl implements PackageService {
 
     @Override
     public Long packagesNotShipped() {
-        return packageRepository.countByStatus(PackageStatus.NOT_SHIPPED.toString());
+
+        Long packagesNotShipped = packageRepository.countByStatus(PackageStatus.NOT_SHIPPED.toString());
+        Long packagesAtWareHouse = packageRepository.countByStatus(PackageStatus.AT_WAREHOUSE.toString());
+        return packagesNotShipped + packagesAtWareHouse;
     }
 
     @Override
     public Long packagesShipped() {
-        return packageRepository.countByStatus(PackageStatus.SHIPPED.toString());
+        Long packagesAtCustom = packageRepository.countByStatus(PackageStatus.AT_CUSTOMS.toString());
+        Long packagesAtWareHouse = packageRepository.countByStatus(PackageStatus.SHIPPED.toString());
+        return packagesAtCustom + packagesAtWareHouse;
     }
 
     @Override

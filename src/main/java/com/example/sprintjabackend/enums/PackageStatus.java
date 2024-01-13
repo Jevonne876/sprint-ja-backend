@@ -4,6 +4,7 @@ public enum PackageStatus {
 
     DEFAULT,
     AT_WAREHOUSE,
+    AT_CUSTOMS,
     NOT_SHIPPED,
     SHIPPED,
     READY_FOR_PICKUP,

@@ -49,13 +49,6 @@ public class EmailService {
     }
 
 
-    public void sendNewPasswordEmail(String firstName, String password, String email) throws MessagingException {
-        Message message = createEmail(firstName, password, email);
-        SMTPTransport smtpTransport = (SMTPTransport) getEmailSession().getTransport(SIMPLE_MAIL_TRANSFER_PROTOCOL);
-        smtpTransport.connect(GMAIL_SMTP_SERVER, USERNAME, PASSWORD);
-        smtpTransport.sendMessage(message, message.getAllRecipients());
-        smtpTransport.close();
-    }
 
     public void sendNewPackageEmail(String firstName, String lastName, Long trn, String trackingNumber, String courier, String description, double weight, double cost) throws MessagingException {
         Message message = newPackageCreated(firstName, lastName, trn, trackingNumber, courier, description, weight, cost);
@@ -73,17 +66,7 @@ public class EmailService {
         smtpTransport.close();
     }
 
-//    public String sendPasswordResetLink(String email) throws MessagingException {
-//        User user = userRepository.findUserByEmail(email);
-//        String link = "http://localhost:4200/#/password-reset";
-//        if (user != null) {
-//            UserPrincipal userPrincipal = new UserPrincipal(user);
-//            String token = jwtTokenProvider.generateJwtToken(userPrincipal, 300000);
-//            Message message = sendEmail(email, "Password Reset Link", "Dear, " + user.getFirstName() + ".\n\n Please use link :" +);
-//        } else {
-//            throw new UsernameNotFoundException("Not User found by email " + user.getEmail());
-//        }
-//    }
+
 
     public void sendMessage(String recipient, String subject, String text) throws MessagingException {
         Message message = sendEmail(recipient, subject, text);
