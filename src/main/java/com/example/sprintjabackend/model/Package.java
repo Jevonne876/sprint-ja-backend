@@ -12,7 +12,6 @@ import java.util.UUID;
 
 @Table
 @Entity
-
 public class Package implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
