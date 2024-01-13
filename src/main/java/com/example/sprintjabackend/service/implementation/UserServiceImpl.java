@@ -59,7 +59,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
                          Date dateOfBirth, String email, String password, String phoneNumber,
                          String streetAddress, String parish, String pickUpBranch) throws PhoneNumberException, EmailExistException, TrnExistException, MessagingException {
 
-    //    validateTrnAndEmail(trn, email, phoneNumber);
+        validateTrnAndEmail(trn, email, phoneNumber);
         User newUser = new User();
         newUser.setTrn(trn);
         newUser.setFirstName(firstName);
@@ -78,7 +78,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
-    public User addNewUserFromAdmin( Long trn,
+    public User addNewUserFromAdmin(Long trn,
                                     String firstName, String lastName,
                                     Date dateOfBirth, String email, String phoneNumber,
                                     String streetAddress, String parish,
@@ -97,7 +97,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         newUser.setParish("");
         newUser.setPickUpBranch("");
         this.userRepository.save(newUser);
-        this.emailService.sendNewAccountPassword(firstName,lastName,password,email);
+        this.emailService.sendNewAccountPassword(firstName, lastName, password, email);
         return null;
     }
 
@@ -229,21 +229,21 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
 
-
     private void validateTrnAndEmail(long newTrn, String newEmail, String newPhoneNumber) throws TrnExistException, EmailExistException, PhoneNumberException {
 
         User userByNewTrn = findUserByTrn(newTrn);
-        User userByNewEmail = findUserByEmail(newEmail);
-        User userByNewPhoneNumber = findUserByPhoneNumber(newPhoneNumber);
-
-
         if (userByNewTrn != null) {
-            throw new TrnExistException(TRN_ALREADY_EXISTS);
-        } else if (userByNewEmail != null) {
-            throw new EmailExistException(EMAIL_ALREADY_EXISTS);
-        } else if (userByNewPhoneNumber != null) {
-            throw new PhoneNumberException(PHONE_NUMBER_ALREADY_EXISTS);
+            throw new TrnExistException(TRN_ALREADY_EXISTS + " " + newTrn);
+        }
 
+        User userByNewEmail = findUserByEmail(newEmail);
+        if (userByNewEmail != null) {
+            throw new EmailExistException(EMAIL_ALREADY_EXISTS + " " + newEmail.toLowerCase());
+        }
+
+        User userByNewPhoneNumber = findUserByPhoneNumber(newPhoneNumber);
+        if (userByNewPhoneNumber != null) {
+            throw new PhoneNumberException(PHONE_NUMBER_ALREADY_EXISTS + " " + newPhoneNumber.toLowerCase());
         }
 
     }
