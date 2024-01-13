@@ -4,10 +4,15 @@ import com.example.sprintjabackend.exception.domain.EmailExistException;
 import com.example.sprintjabackend.exception.domain.EmailNotFoundException;
 import com.example.sprintjabackend.exception.domain.PhoneNumberException;
 import com.example.sprintjabackend.exception.domain.TrnExistException;
+import com.example.sprintjabackend.model.Token;
 import com.example.sprintjabackend.model.User;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import javax.mail.MessagingException;
 import java.util.Date;
+import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 
@@ -17,8 +22,8 @@ public interface UserService {
                   String email, String password, String phoneNumber,
                   String address1, String address2, String pickUpBranch) throws EmailExistException, TrnExistException, PhoneNumberException, MessagingException;
 
-    User updateUser(UUID userId, Long trn, String firstName, String lastName, Date dateOfBirth,
-                    String email, String password, String phoneNumber,
+    User updateUser(UUID userId, Long trn, String firstName, String lastName,
+                    String email, String phoneNumber,
                     String address1, String address2, String pickUpBranch) throws EmailExistException, TrnExistException, PhoneNumberException;
 
     User findUserByUsername(String username);
@@ -31,5 +36,21 @@ public interface UserService {
 
     User findUserByUserId(UUID userId);
 
-    void resetPassword(String email) throws EmailNotFoundException, MessagingException;
+    Token forgotPassword(String email) throws EmailNotFoundException, MessagingException;
+
+    Boolean resetPassword(String email,String newPassword);
+
+    Boolean passwordReset(String email) throws EmailNotFoundException;
+
+    Page<User> findAllByRoleAndLastNameContainingIgnoreCaseOrderByCreatedAtDesc(Pageable pageable,String lastName);
+
+    public Page<User> findAllAdminByRole(Pageable pageable);
+
+    public void deleteUser(String username);
+
+    User addNewUserFromAdmin(Long trn,
+                             String firstName, String lastName,
+                             Date dateOfBirth, String email, String phoneNumber,
+                             String streetAddress, String parish,
+                             String pickUpBranch) throws PhoneNumberException, EmailExistException, TrnExistException, MessagingException;
 }
