@@ -9,6 +9,6 @@ public enum PackageStatus {
     SHIPPED,
     READY_FOR_PICKUP,
     DELIVERED,
-
+    PRE_ALERT_RECEIVED
 
 }

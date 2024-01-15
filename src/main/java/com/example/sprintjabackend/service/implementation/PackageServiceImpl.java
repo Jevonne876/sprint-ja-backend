@@ -65,7 +65,7 @@ public class PackageServiceImpl implements PackageService {
         aPackage.setInvoice(filename);
         aPackage.setFirstName(user.getFirstName());
         aPackage.setLastName(user.getLastName());
-        aPackage.setStatus(PackageStatus.NOT_SHIPPED.toString());
+        aPackage.setStatus(PackageStatus.PRE_ALERT_RECEIVED.toString());
         packageRepository.save(aPackage);
         emailService.sendNewPackageEmail(user.getFirstName(), user.getLastName(), user.getTrn(), trackingNumber, courier, description, weight, cost);
         return aPackage;
@@ -209,7 +209,8 @@ public class PackageServiceImpl implements PackageService {
 
         Long packagesNotShipped = packageRepository.countByStatus(PackageStatus.NOT_SHIPPED.toString());
         Long packagesAtWareHouse = packageRepository.countByStatus(PackageStatus.AT_WAREHOUSE.toString());
-        return packagesNotShipped + packagesAtWareHouse;
+        Long preAlert = packageRepository.countByStatus(PackageStatus.PRE_ALERT_RECEIVED.toString());
+        return packagesNotShipped + packagesAtWareHouse + preAlert;
     }
 
     @Override
