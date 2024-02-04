@@ -22,6 +22,7 @@ import java.nio.file.Path;
 import java.util.*;
 
 import static com.example.sprintjabackend.constant.PackageConstant.TRACKING_NUMBER_FOUND;
+import static com.example.sprintjabackend.enums.PackageStatus.*;
 import static java.nio.file.Paths.get;
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 import static java.nio.file.Files.copy;
@@ -50,7 +51,7 @@ public class PackageServiceImpl implements PackageService {
     @Override
     public Package addNewPackage(String trackingNumber, String courier, String description, double weight,
                                  double cost, UUID userId, MultipartFile file)
-            throws TrackingNumberException, MessagingException, IOException {
+            throws TrackingNumberException, MessagingException {
         User user = userService.findUserByUserId(userId);
         //saves the file first in order to get filename
         validateTrackingNumber(trackingNumber);
@@ -65,7 +66,7 @@ public class PackageServiceImpl implements PackageService {
         aPackage.setInvoice(filename);
         aPackage.setFirstName(user.getFirstName());
         aPackage.setLastName(user.getLastName());
-        aPackage.setStatus(PackageStatus.PRE_ALERT_RECEIVED.toString());
+        aPackage.setStatus(PRE_ALERT_RECEIVED.toString());
         packageRepository.save(aPackage);
         emailService.sendNewPackageEmail(user.getFirstName(), user.getLastName(), user.getTrn(), trackingNumber, courier, description, weight, cost);
         return aPackage;
@@ -75,7 +76,7 @@ public class PackageServiceImpl implements PackageService {
     public Package addNewPackage(String trackingNumber, String courier, String description,
                                  String status, double weight,
                                  double cost, UUID userId,
-                                 MultipartFile file) throws TrackingNumberException, MessagingException, IOException {
+                                 MultipartFile file) throws TrackingNumberException, IOException {
         User user = userService.findUserByUserId(userId);
         //saves the file first in order to get filename
         validateTrackingNumber(trackingNumber);
@@ -100,7 +101,7 @@ public class PackageServiceImpl implements PackageService {
                                  String description, double weight,
                                  double cost, UUID userId) throws TrackingNumberException {
 
-        Package getPackageToBeUpdated = new Package();
+        Package getPackageToBeUpdated;
         User user = userService.findUserByUserId(userId);
         getPackageToBeUpdated = packageRepository.findByTrackingNumber(oldTrackingNumber);
         validateTrackingNumber(trackingNumber);
@@ -117,9 +118,9 @@ public class PackageServiceImpl implements PackageService {
     }
 
     @Override
-    public Package adminUpdatePackage(String oldTrackingNumber, String trackingNumber, String courier, String description, String status, double weight, double cost, UUID userId) throws TrackingNumberException, IOException, MessagingException {
+    public Package adminUpdatePackage(String oldTrackingNumber, String trackingNumber, String courier, String description, String status, double weight, double cost, UUID userId) throws MessagingException {
 
-        Package getPackageToBeUpdated = new Package();
+        Package getPackageToBeUpdated;
         User user = userService.findUserByUserId(userId);
         getPackageToBeUpdated = packageRepository.findByTrackingNumber(oldTrackingNumber);
         getPackageToBeUpdated.setTrackingNumber(trackingNumber);
@@ -145,7 +146,7 @@ public class PackageServiceImpl implements PackageService {
     @Override
     public Page<Package> findAllNotShipped(Pageable pageable) {
 
-        List<String> statusList = Arrays.asList(PackageStatus.NOT_SHIPPED.toString(), PackageStatus.AT_WAREHOUSE.toString());
+        List<String> statusList = Arrays.asList(NOT_SHIPPED.toString(), AT_WAREHOUSE.toString(), PRE_ALERT_RECEIVED.toString());
 
         return packageRepository.findAllByStatusInOrderByCreatedAtDesc(pageable, statusList);
 
@@ -154,20 +155,20 @@ public class PackageServiceImpl implements PackageService {
     @Override
     public Page<Package> findAllShipped(Pageable pageable) {
 
-        List<String> statusList = Arrays.asList(PackageStatus.AT_CUSTOMS.toString(), PackageStatus.SHIPPED.toString());
+        List<String> statusList = Arrays.asList(AT_CUSTOMS.name(), PackageStatus.SHIPPED.name());
         return packageRepository.findAllByStatusInOrderByCreatedAtDesc(pageable, statusList);
     }
 
     @Override
     public Page<Package> findAllReadyForPickup(Pageable pageable) {
 
-        return packageRepository.findAllByStatusOrderByCreatedAtDesc(pageable, PackageStatus.READY_FOR_PICKUP.name().toString());
+        return packageRepository.findAllByStatusOrderByCreatedAtDesc(pageable, READY_FOR_PICKUP.name());
     }
 
     @Override
     public Page<Package> findAllDelivered(Pageable pageable) {
 
-        return packageRepository.findAllByStatusOrderByCreatedAtDesc(pageable, PackageStatus.DELIVERED.name().toString());
+        return packageRepository.findAllByStatusOrderByCreatedAtDesc(pageable, DELIVERED.name());
     }
 
     @Override
@@ -200,16 +201,16 @@ public class PackageServiceImpl implements PackageService {
     }
 
     @Override
-    public List<Package> findAllByUserIdAndStatusOrderByCreatedAtDesc(UUID uuid, String Status) {
-        return packageRepository.findAllByUserIdAndStatusOrderByCreatedAtDesc(uuid, PackageStatus.NOT_SHIPPED.toString());
+    public List<Package> findAllByUserIdAndStatusOrderByCreatedAtDesc(UUID uuid, String status) {
+        return packageRepository.findAllByUserIdAndStatusOrderByCreatedAtDesc(uuid, NOT_SHIPPED.toString());
     }
 
     @Override
     public Long packagesNotShipped() {
 
-        Long packagesNotShipped = packageRepository.countByStatus(PackageStatus.NOT_SHIPPED.toString());
-        Long packagesAtWareHouse = packageRepository.countByStatus(PackageStatus.AT_WAREHOUSE.toString());
-        Long preAlert = packageRepository.countByStatus(PackageStatus.PRE_ALERT_RECEIVED.toString());
+        Long packagesNotShipped = packageRepository.countByStatus(NOT_SHIPPED.toString());
+        Long packagesAtWareHouse = packageRepository.countByStatus(AT_WAREHOUSE.toString());
+        Long preAlert = packageRepository.countByStatus(PRE_ALERT_RECEIVED.toString());
         return packagesNotShipped + packagesAtWareHouse + preAlert;
     }
 
@@ -243,7 +244,7 @@ public class PackageServiceImpl implements PackageService {
     //functions below are related to user admin
     @Override
     public Long userPackagesNotShipped(UUID userId) {
-        return packageRepository.countByUserIdAndStatus(userId, PackageStatus.NOT_SHIPPED.toString());
+        return packageRepository.countByUserIdAndStatus(userId, NOT_SHIPPED.toString());
     }
 
     @Override
@@ -264,7 +265,7 @@ public class PackageServiceImpl implements PackageService {
     //functions below are related to user
     @Override
     public Page<Package> findAllUserPackagesNotShipped(UUID userId, Pageable pageable) {
-        return packageRepository.findAllByUserIdAndStatusOrderByUpdatedAtDesc(userId, PackageStatus.NOT_SHIPPED.toString(), pageable);
+        return packageRepository.findAllByUserIdAndStatusOrderByUpdatedAtDesc(userId, NOT_SHIPPED.toString(), pageable);
     }
 
     @Override
